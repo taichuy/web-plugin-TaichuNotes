@@ -66,3 +66,20 @@ body {
     border-bottom: 1px solid #303030 !important;
   }
 }
+
+/* Vditor Toolbar Compact Style */
+.vditor-toolbar {
+  padding: 4px 6px !important;
+  line-height: 1 !important;
+  height: auto !important;
+}
+
+.vditor-toolbar__item {
+  padding: 4px !important;
+  margin: 0 2px !important;
+}
+
+.vditor-toolbar__item svg {
+  height: 16px !important;
+  width: 16px !important;
+}

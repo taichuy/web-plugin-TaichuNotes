@@ -113,6 +113,22 @@ const SidePanelContent = () => {
 
   const lastProcessedContent = useRef<string | null>(null)
 
+  // Manually inject Vditor icons to ensure they load in extension environment
+  useEffect(() => {
+    try {
+      const scriptId = 'vditor-icon-script'
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement('script')
+        script.id = scriptId
+        script.src = chrome.runtime.getURL("assets/vditor/dist/js/icons/ant.js")
+        script.async = true
+        document.body.appendChild(script)
+      }
+    } catch (e) {
+      console.warn("Failed to inject icon script:", e)
+    }
+  }, [])
+
   // Initialize Vditor
   useEffect(() => {
     if (view === "editor" && editorContainerRef.current && !vditorRef.current) {
