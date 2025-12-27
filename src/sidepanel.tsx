@@ -212,6 +212,7 @@ const SidePanelContent = () => {
       }
 
       if (mode === "selection") {
+        setLoadingTip("Please select an element on the page...")
         try {
           await chrome.tabs.sendMessage(tab.id, { action: "extract", mode: "selection" })
         } catch (err) {
@@ -357,11 +358,22 @@ const SidePanelContent = () => {
             </div>
 
             {/* Editor */}
-            <Spin spinning={loading} tip={loadingTip}>
-              <div style={{ flex: 1, position: 'relative', minHeight: 400 }}>
-                 <div ref={editorContainerRef} style={{ position: 'absolute', inset: 0 }} />
-              </div>
-            </Spin>
+            <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+              {loading && (
+                <div style={{ 
+                  position: 'absolute', 
+                  inset: 0, 
+                  zIndex: 10, 
+                  background: isDarkMode ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <Spin tip={loadingTip} />
+                </div>
+              )}
+              <div ref={editorContainerRef} style={{ height: '100%', width: '100%' }} />
+            </div>
           </>
         ) : (
           <div style={{ padding: 16, height: '100%', overflowY: 'auto' }}>

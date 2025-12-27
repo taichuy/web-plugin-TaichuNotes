@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "node scripts/copy-assets.js && plasmo dev",
     "build": "plasmo build && node scripts/copy-assets.js",
+    "postinstall": "node scripts/copy-assets.js",
     "package": "plasmo package",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
@@ -66,7 +67,17 @@
     "web_accessible_resources": [
       {
         "resources": [
-          "assets/vditor/*"
+          "assets/vditor/*",
+          "assets/vditor/dist/*",
+          "assets/vditor/dist/css/*",
+          "assets/vditor/dist/css/content-theme/*",
+          "assets/vditor/dist/js/*",
+          "assets/vditor/dist/js/i18n/*",
+          "assets/vditor/dist/js/icons/*",
+          "assets/vditor/dist/js/highlight.js/*",
+          "assets/vditor/dist/js/highlight.js/styles/*",
+          "assets/vditor/dist/images/*",
+          "assets/vditor/dist/images/emoji/*"
         ],
         "matches": [
           "<all_urls>"
