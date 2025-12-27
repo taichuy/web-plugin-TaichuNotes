@@ -5,10 +5,10 @@
   "description": "A powerful web clipper for Taichuy.",
   "author": "taichuy",
   "scripts": {
-    "dev": "node scripts/copy-assets.js && plasmo dev",
+    "dev": "node scripts/start-dev.js",
     "build": "plasmo build && node scripts/copy-assets.js",
     "postinstall": "node scripts/copy-assets.js",
-    "package": "plasmo package",
+    "package": "yarn build && plasmo package",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "type-check": "tsc --noEmit",

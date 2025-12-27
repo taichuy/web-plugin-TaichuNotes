@@ -24,31 +24,39 @@ function copyDir(src, dest) {
     }
 }
 
-console.log('Copying Vditor assets...');
+console.log('Initializing Vditor assets script...');
 
-try {
-    // Copy to source assets folder
-    copyDir(src, dest);
-    console.log('Copied to src assets');
-
-    // Copy to build folders if parent exists (meaning build has run/started)
-    // For dev build
-    const devBuildRoot = path.join(__dirname, '../build/chrome-mv3-dev');
-    if (fs.existsSync(devBuildRoot)) {
-         copyDir(src, buildDestDev);
-         console.log('Copied to dev build');
-    }
-
-    // For prod build
-    const prodBuildRoot = path.join(__dirname, '../build/chrome-mv3-prod');
-    if (fs.existsSync(prodBuildRoot)) {
-         copyDir(src, buildDestProd);
-         console.log('Copied to prod build');
-    }
+function runCopy() {
+    console.log('Copying Vditor assets...');
+    try {
+        // Copy to source assets folder
+        copyDir(src, dest);
+        console.log('Copied to src assets');
     
-} catch (e) {
-    console.error('Error copying assets:', e);
-    process.exit(1);
+        // Copy to build folders if parent exists (meaning build has run/started)
+        // For dev build
+        const devBuildRoot = path.join(__dirname, '../build/chrome-mv3-dev');
+        if (fs.existsSync(devBuildRoot)) {
+             copyDir(src, buildDestDev);
+             console.log('Copied to dev build');
+        }
+    
+        // For prod build
+        const prodBuildRoot = path.join(__dirname, '../build/chrome-mv3-prod');
+        if (fs.existsSync(prodBuildRoot)) {
+             copyDir(src, buildDestProd);
+             console.log('Copied to prod build');
+        }
+        
+    } catch (e) {
+        console.error('Error copying assets:', e);
+        process.exit(1);
+    }
+    console.log('Asset copy complete.');
 }
 
-console.log('Asset copy complete.');
+if (require.main === module) {
+    runCopy();
+}
+
+module.exports = runCopy;
