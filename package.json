@@ -1,0 +1,77 @@
+{
+  "name": "taichuy-web-plugin-clipper",
+  "displayName": "Taichuy Web Clipper",
+  "version": "0.0.1",
+  "description": "A powerful web clipper for Taichuy.",
+  "author": "taichuy",
+  "scripts": {
+    "dev": "node scripts/copy-assets.js && plasmo dev",
+    "build": "plasmo build && node scripts/copy-assets.js",
+    "package": "plasmo package",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
+    "type-check": "tsc --noEmit",
+    "validate": "yarn lint && yarn type-check"
+  },
+  "dependencies": {
+    "@mozilla/readability": "^0.6.0",
+    "@plasmohq/messaging": "^0.7.2",
+    "@plasmohq/storage": "^1.15.0",
+    "antd": "^6.1.2",
+    "axios": "^1.13.2",
+    "lucide-react": "^0.562.0",
+    "plasmo": "0.90.5",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "turndown": "^7.2.2",
+    "uuid": "^13.0.0",
+    "vditor": "^3.11.2"
+  },
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "4.1.1",
+    "@types/chrome": "0.0.258",
+    "@types/eslint": "^9.6.1",
+    "@types/mozilla-readability": "^0.2.1",
+    "@types/node": "20.11.5",
+    "@types/react": "18.2.48",
+    "@types/react-dom": "18.2.18",
+    "@types/turndown": "^5.0.6",
+    "@types/uuid": "^11.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.50.1",
+    "@typescript-eslint/parser": "^8.50.1",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^16.5.0",
+    "prettier": "3.2.4",
+    "typescript": "5.3.3",
+    "typescript-eslint": "^8.50.1"
+  },
+  "manifest": {
+    "host_permissions": [
+      "<all_urls>"
+    ],
+    "content_security_policy": {
+      "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+    },
+    "permissions": [
+      "storage",
+      "scripting",
+      "activeTab",
+      "sidePanel"
+    ],
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "assets/vditor/*"
+        ],
+        "matches": [
+          "<all_urls>"
+        ]
+      }
+    ]
+  }
+}
