@@ -25,7 +25,8 @@ import {
   SelectOutlined, 
   SendOutlined,
   ArrowLeftOutlined,
-  WarningOutlined
+  WarningOutlined,
+  DeleteOutlined
 } from "@ant-design/icons"
 
 import "~style.css"
@@ -110,6 +111,8 @@ const SidePanelContent = () => {
     }
   }, [])
 
+  const lastProcessedContent = useRef<string | null>(null)
+
   // Initialize Vditor
   useEffect(() => {
     if (view === "editor" && editorContainerRef.current && !vditorRef.current) {
@@ -157,14 +160,22 @@ const SidePanelContent = () => {
               "fullscreen"
             ],
             cache: { enable: false },
-            value: currentClip?.content || "",
+            value: "", // Let useEffect handle initial content
             input: (_val) => {
               // Handle input if needed
             },
             after: () => {
               console.log("Vditor initialized successfully")
-              if (currentClip?.content) {
-                vditorRef.current?.setValue(currentClip.content)
+              // Trigger a manual check in case currentClip is already ready
+              if (currentClip?.content && currentClip.content !== lastProcessedContent.current) {
+                 const currentVal = vditorRef.current?.getValue() || ""
+                 if (!currentVal) {
+                   vditorRef.current?.setValue(currentClip.content)
+                 } else {
+                   vditorRef.current?.setValue(currentVal + "\n\n---\n\n" + currentClip.content)
+                 }
+                 lastProcessedContent.current = currentClip.content
+                 setLoading(false)
               }
             }
           })
@@ -189,16 +200,34 @@ const SidePanelContent = () => {
   // Update content when clip changes
   useEffect(() => {
     if (vditorRef.current && currentClip?.content) {
-      const currentVal = vditorRef.current.getValue()
-      if (currentVal !== currentClip.content) {
-         vditorRef.current.setValue(currentClip.content)
+      // Check if this content has already been processed to avoid duplicates/loops
+      if (currentClip.content !== lastProcessedContent.current) {
+        const currentVal = vditorRef.current.getValue()
+        
+        if (!currentVal || currentVal.trim() === "") {
+           vditorRef.current.setValue(currentClip.content)
+        } else {
+           // Append new content
+           vditorRef.current.setValue(currentVal + "\n\n---\n\n" + currentClip.content)
+        }
+        
+        lastProcessedContent.current = currentClip.content
       }
+      // Always stop loading when content updates
+      setLoading(false)
     }
   }, [currentClip])
 
+  const handleClear = () => {
+    vditorRef.current?.setValue("")
+    setCurrentClip(null)
+    lastProcessedContent.current = null
+    messageApi.success("Editor cleared")
+  }
+
   const handleExtract = async (mode: ExtractMode) => {
-    setLoading(true)
-    setLoadingTip("Extracting content...")
+    // setLoading(true)
+    // setLoadingTip("Extracting content...")
     
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
@@ -353,6 +382,10 @@ const SidePanelContent = () => {
                 </Tooltip>
                 <Tooltip title="Select element on page">
                   <Button icon={<SelectOutlined />} size="small" onClick={() => handleExtract("selection")}>Pick Element</Button>
+                </Tooltip>
+                <div style={{ width: 1, height: 16, background: isDarkMode ? '#303030' : '#d9d9d9', margin: '0 4px' }} />
+                <Tooltip title="Clear editor content">
+                  <Button icon={<DeleteOutlined />} size="small" danger onClick={handleClear} />
                 </Tooltip>
               </Space>
             </div>
