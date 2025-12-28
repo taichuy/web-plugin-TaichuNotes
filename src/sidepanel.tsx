@@ -2,6 +2,7 @@ import { Component, useEffect, useRef, useState, type ErrorInfo, type ReactNode 
 import Vditor from "vditor"
 import "vditor/dist/index.css"
 import { useStorage } from "@plasmohq/storage/hook"
+import { localStorage, syncStorage } from "~lib/storage"
 import { executeWorkflow } from "~lib/workflow"
 import type { ExtractedData, ExtractMode, WorkflowRequest } from "~lib/types"
 import { 
@@ -83,8 +84,14 @@ const DEFAULT_WORKFLOW: WorkflowRequest[] = [
 ]
 
 const SidePanelContent = () => {
-  const [currentClip, setCurrentClip] = useStorage<ExtractedData>("current_clip")
-  const [workflowConfig, setWorkflowConfig] = useStorage<WorkflowRequest[]>("workflow_config", DEFAULT_WORKFLOW)
+  const [currentClip, setCurrentClip] = useStorage<ExtractedData>({
+    key: "current_clip",
+    instance: localStorage
+  })
+  const [workflowConfig, setWorkflowConfig] = useStorage<WorkflowRequest[]>({
+    key: "workflow_config",
+    instance: syncStorage
+  }, DEFAULT_WORKFLOW)
   
   const [view, setView] = useState<"editor" | "settings">("editor")
   const [loading, setLoading] = useState(false)

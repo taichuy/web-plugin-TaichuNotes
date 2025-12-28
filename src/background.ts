@@ -1,11 +1,9 @@
-import { Storage } from "@plasmohq/storage"
-
-const storage = new Storage()
+import { localStorage } from "~lib/storage"
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   if (request.type === "CLIPPER_DATA") {
     console.log("Received clipper data", request.data)
-    await storage.set("current_clip", request.data)
+    await localStorage.set("current_clip", request.data)
     
     // Optional: Notify user
     chrome.action.setBadgeText({ text: "1", tabId: sender.tab?.id })
