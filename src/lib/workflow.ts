@@ -1,11 +1,11 @@
-import axios from "axios"
+import axios, { isAxiosError } from "axios"
 
 import type { ExtractedData, WorkflowRequest } from "./types"
 
 function replaceVariables(
-  template: any,
+  template: unknown,
   variables: Record<string, string>
-): any {
+): unknown {
   if (typeof template === "string") {
     let result = template
     for (const [key, value] of Object.entries(variables)) {
@@ -18,9 +18,9 @@ function replaceVariables(
   } else if (Array.isArray(template)) {
     return template.map((item) => replaceVariables(item, variables))
   } else if (typeof template === "object" && template !== null) {
-    const newObj: any = {}
+    const newObj: Record<string, unknown> = {}
     for (const key in template) {
-      newObj[key] = replaceVariables(template[key], variables)
+      newObj[key] = replaceVariables((template as Record<string, unknown>)[key], variables)
     }
     return newObj
   }
@@ -43,8 +43,8 @@ export async function executeWorkflow(
 
   for (const step of workflow) {
     try {
-      const url = replaceVariables(step.url, variables)
-      const headers = replaceVariables(step.headers || {}, variables)
+      const url = replaceVariables(step.url, variables) as string
+      const headers = replaceVariables(step.headers || {}, variables) as Record<string, string>
       const body = replaceVariables(step.body, variables)
 
       const response = await axios({
@@ -59,15 +59,28 @@ export async function executeWorkflow(
         status: response.status,
         data: response.data
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Workflow step failed", error)
+      
+      let errorMessage = "Unknown error"
+      let errorResponse = undefined
+
+      if (isAxiosError(error)) {
+          errorMessage = error.message
+          errorResponse = error.response?.data
+      } else if (error instanceof Error) {
+          errorMessage = error.message
+      } else {
+          errorMessage = String(error)
+      }
+
       results.push({
         success: false,
-        error: error.message,
-        response: error.response?.data
+        error: errorMessage,
+        response: errorResponse
       })
       // Stop execution on error?
-      throw new Error(`Step failed: ${error.message}`)
+      throw new Error(`Step failed: ${errorMessage}`)
     }
   }
 

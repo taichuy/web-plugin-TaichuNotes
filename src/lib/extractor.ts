@@ -40,7 +40,7 @@ export function extractContent(
       const reader = new Readability(clone)
       const article = reader.parse()
       if (article) {
-        contentHtml = article.content
+        contentHtml = article.content || ""
         if (article.title) title = article.title
         if (article.byline) author = article.byline
       } else {

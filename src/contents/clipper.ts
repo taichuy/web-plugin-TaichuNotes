@@ -1,7 +1,7 @@
 import type { PlasmoCSConfig } from "plasmo"
 
 import { extractContent } from "~lib/extractor"
-import type { ExtractedData, ExtractMode } from "~lib/types"
+import type { ExtractMode } from "~lib/types"
 
 export const config: PlasmoCSConfig = {
   matches: ["<all_urls>"]
@@ -81,7 +81,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const data = extractContent(mode, document)
         sendResponse({ status: "success", data })
       } catch (e) {
-        sendResponse({ status: "error", message: e.message })
+        const message = e instanceof Error ? e.message : String(e)
+        sendResponse({ status: "error", message })
       }
     }
   }

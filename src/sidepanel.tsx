@@ -28,12 +28,9 @@ import {
   SelectOutlined, 
   SendOutlined,
   ArrowLeftOutlined,
-  WarningOutlined,
   DeleteOutlined,
   CopyOutlined,
-  DownloadOutlined,
-  GlobalOutlined,
-  InfoCircleOutlined
+  DownloadOutlined
 } from "@ant-design/icons"
 
 import "~style.css"
@@ -44,7 +41,7 @@ const { Title, Text } = Typography
 
 // Error Boundary Component
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
-  constructor(props) {
+  constructor(props: { children: ReactNode }) {
     super(props)
     this.state = { hasError: false, error: null }
   }
@@ -88,7 +85,7 @@ const DEFAULT_WORKFLOW: WorkflowRequest[] = [
 ]
 
 const SidePanelContent = () => {
-  const [currentClip, setCurrentClip] = useStorage<ExtractedData>({
+  const [currentClip, setCurrentClip] = useStorage<ExtractedData | null>({
     key: "current_clip",
     instance: localStorage
   })
@@ -195,12 +192,13 @@ const SidePanelContent = () => {
               console.log("Vditor initialized successfully")
               setIsVditorReady(true)
             }
-          })
-        } catch (err) {
-          console.error("Vditor Init Error:", err)
-          setErrorMsg("Failed to initialize editor: " + err.message)
-        }
+        })
+      } catch (err: unknown) {
+        const error = err instanceof Error ? err : new Error(String(err))
+        console.error("Vditor Init Error:", error)
+        setErrorMsg("Failed to initialize editor: " + error.message)
       }
+    }
       
       initVditor()
     }
@@ -293,8 +291,8 @@ const SidePanelContent = () => {
   }
 
   const handleExtract = async (mode: ExtractMode) => {
-    // setLoading(true)
-    // setLoadingTip("Extracting content...")
+    setLoading(true)
+    setLoadingTip("Extracting content...")
     
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
@@ -312,12 +310,12 @@ const SidePanelContent = () => {
         try {
           await chrome.tabs.sendMessage(tab.id, { action: "extract", mode: "selection" })
         } catch (err) {
-           if (err.message.includes("Could not establish connection")) {
+           const errorMessage = err instanceof Error ? err.message : String(err)
+           if (errorMessage.includes("Could not establish connection")) {
               throw new Error("Please refresh the page to enable the clipper.")
            }
            throw err
         }
-        // window.close() // Don't close side panel for selection
         return
       }
 
@@ -329,15 +327,17 @@ const SidePanelContent = () => {
         } else {
           throw new Error(response.message || "Extraction failed")
         }
-      } catch (err) {
-         if (err.message.includes("Could not establish connection")) {
+      } catch (err: unknown) {
+         const errorMessage = err instanceof Error ? err.message : String(err)
+         if (errorMessage.includes("Could not establish connection")) {
             throw new Error("Please refresh the page to enable the clipper.")
          }
          throw err
       }
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e)
-      messageApi.error("Failed: " + e.message)
+      const errorMessage = e instanceof Error ? e.message : String(e)
+      messageApi.error("Failed: " + errorMessage)
     } finally {
       if (mode !== "selection") {
         setLoading(false)
@@ -348,7 +348,7 @@ const SidePanelContent = () => {
   const handleSend = async () => {
     if (!currentClip) return
     
-    const content = (isVditorReady && vditorRef.current?.getValue()) || currentClip.content
+    const content = (isVditorReady && vditorRef.current) ? vditorRef.current.getValue() : currentClip.content
     const dataToSend = { ...currentClip, content }
     
     setLoading(true)
@@ -364,7 +364,8 @@ const SidePanelContent = () => {
       
       messageApi.success("Workflow executed successfully!")
     } catch (e) {
-      messageApi.error("Error: " + e.message)
+      const errorMessage = e instanceof Error ? e.message : String(e)
+      messageApi.error("Error: " + errorMessage)
     } finally {
       setLoading(false)
     }

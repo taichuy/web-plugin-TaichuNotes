@@ -13,7 +13,7 @@ export interface WorkflowRequest {
   url: string;
   method: "GET" | "POST" | "PUT" | "DELETE";
   headers: Record<string, string>;
-  body: any; // Supports variable substitution
+  body: unknown; // Supports variable substitution
 }
 
 export interface AppSettings {

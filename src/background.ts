@@ -1,6 +1,6 @@
 import { localStorage } from "~lib/storage"
 
-chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (request, sender) => {
   if (request.type === "CLIPPER_DATA") {
     console.log("Received clipper data", request.data)
     await localStorage.set("current_clip", request.data)
