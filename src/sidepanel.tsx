@@ -26,7 +26,9 @@ import {
   SendOutlined,
   ArrowLeftOutlined,
   WarningOutlined,
-  DeleteOutlined
+  DeleteOutlined,
+  CopyOutlined,
+  DownloadOutlined
 } from "@ant-design/icons"
 
 import "~style.css"
@@ -231,6 +233,44 @@ const SidePanelContent = () => {
     messageApi.success("Editor cleared")
   }
 
+  const handleCopy = async () => {
+    const content = vditorRef.current?.getValue() || ""
+    if (!content) {
+      messageApi.warning("No content to copy")
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(content)
+      messageApi.success("Copied to clipboard")
+    } catch (err) {
+      console.error(err)
+      messageApi.error("Failed to copy")
+    }
+  }
+
+  const handleDownload = () => {
+    const content = vditorRef.current?.getValue() || ""
+    if (!content) {
+      messageApi.warning("No content to download")
+      return
+    }
+    try {
+      const blob = new Blob([content], { type: "text/markdown" })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `clipping-${new Date().toISOString().slice(0, 10)}.md`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      messageApi.success("Download started")
+    } catch (err) {
+      console.error(err)
+      messageApi.error("Failed to download")
+    }
+  }
+
   const handleExtract = async (mode: ExtractMode) => {
     // setLoading(true)
     // setLoadingTip("Extracting content...")
@@ -389,10 +429,6 @@ const SidePanelContent = () => {
                 <Tooltip title="Select element on page">
                   <Button icon={<SelectOutlined />} size="small" onClick={() => handleExtract("selection")}>Pick Element</Button>
                 </Tooltip>
-                <div style={{ width: 1, height: 16, background: isDarkMode ? '#303030' : '#d9d9d9', margin: '0 4px' }} />
-                <Tooltip title="Clear editor content">
-                  <Button icon={<DeleteOutlined />} size="small" danger onClick={handleClear} />
-                </Tooltip>
               </Space>
             </div>
 
@@ -441,19 +477,34 @@ const SidePanelContent = () => {
         padding: '8px 16px', 
         background: isDarkMode ? '#141414' : '#fff',
         borderTop: `1px solid ${isDarkMode ? '#303030' : '#f0f0f0'}`,
-        textAlign: 'right',
-        height: 49
+        height: 49,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
       }}>
         {view === "editor" && (
-          <Button 
-            type="primary" 
-            icon={<SendOutlined />} 
-            onClick={handleSend}
-            loading={loading}
-            disabled={!currentClip}
-          >
-            Execute Workflow
-          </Button>
+          <>
+            <Space size="small">
+               <Tooltip title="Clear Content">
+                  <Button danger icon={<DeleteOutlined />} onClick={handleClear} />
+               </Tooltip>
+               <Tooltip title="Copy Markdown">
+                  <Button icon={<CopyOutlined />} onClick={handleCopy} />
+               </Tooltip>
+               <Tooltip title="Download Markdown">
+                  <Button icon={<DownloadOutlined />} onClick={handleDownload} />
+               </Tooltip>
+            </Space>
+            <Button 
+              type="primary" 
+              icon={<SendOutlined />} 
+              onClick={handleSend}
+              loading={loading}
+              disabled={!currentClip}
+            >
+              Execute Workflow
+            </Button>
+          </>
         )}
       </Footer>
     </Layout>
