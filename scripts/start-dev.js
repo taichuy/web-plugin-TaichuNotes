@@ -24,10 +24,11 @@ const checkInterval = setInterval(() => {
     if (fs.existsSync(manifestPath)) {
         // Build exists and likely finished initial build
         const buildAssetsDir = path.join(buildDir, 'assets/vditor/dist');
+        const buildLocalesDir = path.join(buildDir, '_locales');
         
-        // If assets don't exist in build, copy them
-        if (!fs.existsSync(buildAssetsDir)) {
-            console.log('[Dev Script] Build directory detected. Injecting assets...');
+        // If assets or locales don't exist in build, copy them
+        if (!fs.existsSync(buildAssetsDir) || !fs.existsSync(buildLocalesDir)) {
+            console.log('[Dev Script] Build directory detected. Injecting assets and locales...');
             try {
                 runCopy(); 
             } catch (e) {
