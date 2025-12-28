@@ -1,8 +1,8 @@
 {
   "name": "taichuy-web-plugin-clipper",
-  "displayName": "Taichuy Web Clipper",
+  "displayName": "__MSG_extensionName__",
   "version": "0.0.1",
-  "description": "A powerful web clipper for Taichuy.",
+  "description": "__MSG_extensionDescription__",
   "author": "taichuy",
   "scripts": {
     "dev": "node scripts/start-dev.js",
@@ -52,6 +52,7 @@
     "typescript-eslint": "^8.50.1"
   },
   "manifest": {
+    "default_locale": "zh_CN",
     "host_permissions": [
       "<all_urls>"
     ],

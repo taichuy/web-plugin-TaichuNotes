@@ -1,0 +1,74 @@
+{
+  "extensionName": {
+    "message": "太初笔记",
+    "description": "插件名称"
+  },
+  "extensionDescription": {
+    "message": "在web上快速剪切，记录你最初想法",
+    "description": "插件描述"
+  },
+  "save": {
+    "message": "保存",
+    "description": "保存按钮文本"
+  },
+  "saving": {
+    "message": "保存中...",
+    "description": "保存中状态文本"
+  },
+  "copy": {
+    "message": "复制",
+    "description": "复制按钮文本"
+  },
+  "copied": {
+    "message": "已复制!",
+    "description": "已复制状态文本"
+  },
+  "download": {
+    "message": "下载",
+    "description": "下载按钮文本"
+  },
+  "clear": {
+    "message": "清空",
+    "description": "清空按钮文本"
+  },
+  "settings": {
+    "message": "设置",
+    "description": "设置按钮文本"
+  },
+  "workflowConfig": {
+    "message": "工作流配置",
+    "description": "工作流配置菜单项"
+  },
+  "language": {
+    "message": "语言",
+    "description": "语言菜单项"
+  },
+  "aboutUs": {
+    "message": "关于我们",
+    "description": "关于我们菜单项"
+  },
+  "executeWorkflow": {
+    "message": "执行工作流",
+    "description": "执行工作流按钮"
+  },
+  "smartExtract": {
+    "message": "智能",
+    "description": "智能提取按钮"
+  },
+  "fullPage": {
+    "message": "全文",
+    "description": "全文提取按钮"
+  },
+  "selectedText": {
+    "message": "选中",
+    "description": "选中提取按钮"
+  },
+  "pickElement": {
+    "message": "选取",
+    "description": "选取元素提取按钮"
+  },
+  "version": {
+    "message": "版本",
+    "description": "版本标签"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "extensionName": {
+    "message": "Taichu Notes",
+    "description": "Name of the extension"
+  },
+  "extensionDescription": {
+    "message": "Quickly clip on the web and record your initial thoughts.",
+    "description": "Description of the extension"
+  },
+  "save": {
+    "message": "Save",
+    "description": "Save button text"
+  },
+  "saving": {
+    "message": "Saving...",
+    "description": "Saving state text"
+  },
+  "copy": {
+    "message": "Copy",
+    "description": "Copy button text"
+  },
+  "copied": {
+    "message": "Copied!",
+    "description": "Copied state text"
+  },
+  "download": {
+    "message": "Download",
+    "description": "Download button text"
+  },
+  "clear": {
+    "message": "Clear",
+    "description": "Clear button text"
+  },
+  "settings": {
+    "message": "Settings",
+    "description": "Settings button text"
+  },
+  "workflowConfig": {
+    "message": "Workflow Config",
+    "description": "Workflow Config menu item"
+  },
+  "language": {
+    "message": "Language",
+    "description": "Language menu item"
+  },
+  "aboutUs": {
+    "message": "About Us",
+    "description": "About Us menu item"
+  },
+  "executeWorkflow": {
+    "message": "Execute Workflow",
+    "description": "Execute Workflow button"
+  },
+  "smartExtract": {
+    "message": "Smart",
+    "description": "Smart extract button"
+  },
+  "fullPage": {
+    "message": "Full",
+    "description": "Full page extract button"
+  },
+  "selectedText": {
+    "message": "Selected",
+    "description": "Selected text extract button"
+  },
+  "pickElement": {
+    "message": "Pick Element",
+    "description": "Pick element extract button"
+  },
+  "version": {
+    "message": "Version",
+    "description": "Version label"
+  }
+}

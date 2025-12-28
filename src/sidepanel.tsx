@@ -396,7 +396,7 @@ const SidePanelContent = () => {
           lineHeight: '48px'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Title level={5} style={{ margin: 0, color: '#1677ff' }}>Taichuy Clipper</Title>
+            <Title level={5} style={{ margin: 0, color: '#1677ff' }}>{chrome.i18n.getMessage("extensionName")}</Title>
           </div>
           <div>
             <Tooltip title={view === "editor" ? "Settings" : "Back to Editor"}>
@@ -439,16 +439,16 @@ const SidePanelContent = () => {
             }}>
               <Space>
                 <Tooltip title="Auto-detect content">
-                  <Button icon={<RocketOutlined />} size="small" onClick={() => handleExtract("smart")}>Smart</Button>
+                  <Button icon={<RocketOutlined />} size="small" onClick={() => handleExtract("smart")}>{chrome.i18n.getMessage("smartExtract")}</Button>
                 </Tooltip>
                 <Tooltip title="Full page HTML">
-                  <Button icon={<FileTextOutlined />} size="small" onClick={() => handleExtract("full")}>Full</Button>
+                  <Button icon={<FileTextOutlined />} size="small" onClick={() => handleExtract("full")}>{chrome.i18n.getMessage("fullPage")}</Button>
                 </Tooltip>
                 <Tooltip title="Selected text">
-                  <Button icon={<ScissorOutlined />} size="small" onClick={() => handleExtract("selected")}>Selected</Button>
+                  <Button icon={<ScissorOutlined />} size="small" onClick={() => handleExtract("selected")}>{chrome.i18n.getMessage("selectedText")}</Button>
                 </Tooltip>
                 <Tooltip title="Select element on page">
-                  <Button icon={<SelectOutlined />} size="small" onClick={() => handleExtract("selection")}>Pick Element</Button>
+                  <Button icon={<SelectOutlined />} size="small" onClick={() => handleExtract("selection")}>{chrome.i18n.getMessage("pickElement")}</Button>
                 </Tooltip>
               </Space>
             </div>
@@ -488,16 +488,16 @@ const SidePanelContent = () => {
                 onClick={({ key }) => setActiveSetting(key)}
                 style={{ height: '100%', borderRight: 0, background: 'transparent' }}
                 items={[
-                  { key: 'workflow', label: '工作流配置' },
-                  { key: 'language', label: '语言'},
-                  { key: 'about', label: '关于我们' },
+                  { key: 'workflow', label: chrome.i18n.getMessage("workflowConfig") },
+                  { key: 'language', label: chrome.i18n.getMessage("language")},
+                  { key: 'about', label: chrome.i18n.getMessage("aboutUs") },
                 ]}
               />
             </Sider>
             <Content style={{ padding: 16, overflowY: 'auto', background: isDarkMode ? '#000' : '#fff' }}>
               {activeSetting === 'workflow' && (
                 <>
-                  <Title level={5}>工作流配置</Title>
+                  <Title level={5}>{chrome.i18n.getMessage("workflowConfig")}</Title>
                   <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
                     Available variables: <Text code>$main_text</Text>, <Text code>$source_url</Text>, <Text code>$web_title</Text>, <Text code>$author</Text>
                   </Text>
@@ -518,7 +518,7 @@ const SidePanelContent = () => {
               )}
               {activeSetting === 'language' && (
                 <div>
-                  <Title level={5}>语言设置</Title>
+                  <Title level={5}>{chrome.i18n.getMessage("language")}</Title>
                   <Select 
                     value={userLanguage}
                     onChange={(val) => setUserLanguage(val)}
@@ -532,12 +532,12 @@ const SidePanelContent = () => {
               )}
               {activeSetting === 'about' && (
                 <div>
-                  <Title level={5}>关于我们</Title>
-                  <Text strong>Taichuy Web Clipper</Text>
+                  <Title level={5}>{chrome.i18n.getMessage("aboutUs")}</Title>
+                  <Text strong>{chrome.i18n.getMessage("extensionName")}</Text>
                   <br/>
-                  <Text type="secondary">版本: 0.0.1</Text>
+                  <Text type="secondary">{chrome.i18n.getMessage("version")}: 0.0.1</Text>
                   <br/><br/>
-                  <Text>一个强大的网页剪藏工具，支持自定义工作流，助您高效管理知识。</Text>
+                  <Text>{chrome.i18n.getMessage("extensionDescription")}</Text>
                 </div>
               )}
             </Content>
@@ -557,13 +557,13 @@ const SidePanelContent = () => {
         {view === "editor" && (
           <>
             <Space size="small">
-               <Tooltip title="Clear Content">
+               <Tooltip title={chrome.i18n.getMessage("clear")}>
                   <Button danger icon={<DeleteOutlined />} onClick={handleClear} />
                </Tooltip>
-               <Tooltip title="Copy Markdown">
+               <Tooltip title={chrome.i18n.getMessage("copy")}>
                   <Button icon={<CopyOutlined />} onClick={handleCopy} />
                </Tooltip>
-               <Tooltip title="Download Markdown">
+               <Tooltip title={chrome.i18n.getMessage("download")}>
                   <Button icon={<DownloadOutlined />} onClick={handleDownload} />
                </Tooltip>
             </Space>
@@ -574,7 +574,7 @@ const SidePanelContent = () => {
               loading={loading}
               disabled={!currentClip}
             >
-              Execute Workflow
+              {chrome.i18n.getMessage("executeWorkflow")}
             </Button>
           </>
         )}

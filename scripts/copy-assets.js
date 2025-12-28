@@ -47,11 +47,31 @@ function runCopy() {
              copyDir(src, buildDestProd);
              console.log('Copied to prod build');
         }
+
+        // Copy _locales
+        const localesSrc = path.join(__dirname, '../_locales');
+        const localesDestDev = path.join(__dirname, '../build/chrome-mv3-dev/_locales');
+        const localesDestProd = path.join(__dirname, '../build/chrome-mv3-prod/_locales');
+        
+        if (fs.existsSync(localesSrc)) {
+             // Copy to dev build
+            if (fs.existsSync(devBuildRoot)) {
+                copyDir(localesSrc, localesDestDev);
+                console.log('Copied _locales to dev build');
+            }
+            
+            // Copy to prod build
+            if (fs.existsSync(prodBuildRoot)) {
+                copyDir(localesSrc, localesDestProd);
+                console.log('Copied _locales to prod build');
+            }
+        }
         
     } catch (e) {
         console.error('Error copying assets:', e);
         process.exit(1);
     }
+
     console.log('Asset copy complete.');
 }
 
