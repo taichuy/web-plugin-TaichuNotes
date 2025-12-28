@@ -9,14 +9,22 @@ export interface ExtractedData {
   html?: string;
 }
 
-export interface WorkflowRequest {
+export interface HttpConfig {
   url: string;
   method: "GET" | "POST" | "PUT" | "DELETE";
   headers: Record<string, string>;
   body: unknown; // Supports variable substitution
 }
 
+export interface PushService {
+  name: string;
+  description: string;
+  is_open: boolean;
+  server_type: "http" | string;
+  config: HttpConfig | Record<string, unknown>;
+}
+
 export interface AppSettings {
-  workflow: WorkflowRequest[];
+  services: PushService[];
   theme: "light" | "dark" | "auto";
 }

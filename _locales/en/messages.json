@@ -35,9 +35,13 @@
     "message": "Settings",
     "description": "Settings button text"
   },
-  "workflowConfig": {
-    "message": "Workflow Config",
-    "description": "Workflow Config menu item"
+  "pushServices": {
+    "message": "Push Services",
+    "description": "Push Services menu item"
+  },
+  "executePush": {
+    "message": "Push to Services",
+    "description": "Push to Services button"
   },
   "language": {
     "message": "Language",
@@ -47,10 +51,7 @@
     "message": "About Us",
     "description": "About Us menu item"
   },
-  "executeWorkflow": {
-    "message": "Execute Workflow",
-    "description": "Execute Workflow button"
-  },
+
   "smartExtract": {
     "message": "Smart",
     "description": "Smart extract button"

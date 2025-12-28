@@ -35,9 +35,13 @@
     "message": "设置",
     "description": "设置按钮文本"
   },
-  "workflowConfig": {
-    "message": "工作流配置",
-    "description": "工作流配置菜单项"
+  "pushServices": {
+    "message": "推送服务",
+    "description": "推送服务菜单项"
+  },
+  "executePush": {
+    "message": "推送到服务",
+    "description": "推送到服务按钮"
   },
   "language": {
     "message": "语言",
@@ -47,10 +51,7 @@
     "message": "关于我们",
     "description": "关于我们菜单项"
   },
-  "executeWorkflow": {
-    "message": "执行工作流",
-    "description": "执行工作流按钮"
-  },
+
   "smartExtract": {
     "message": "智能",
     "description": "智能提取按钮"

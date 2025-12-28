@@ -1,34 +1,8 @@
-import axios, { isAxiosError } from "axios"
-
-import type { ExtractedData, WorkflowRequest } from "./types"
-
-function replaceVariables(
-  template: unknown,
-  variables: Record<string, string>
-): unknown {
-  if (typeof template === "string") {
-    let result = template
-    for (const [key, value] of Object.entries(variables)) {
-      // Use a global regex to replace all occurrences
-      // Escape the key for regex usage (though $ is special, we want literal match)
-      const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-      result = result.replace(new RegExp(escapedKey, "g"), value)
-    }
-    return result
-  } else if (Array.isArray(template)) {
-    return template.map((item) => replaceVariables(item, variables))
-  } else if (typeof template === "object" && template !== null) {
-    const newObj: Record<string, unknown> = {}
-    for (const key in template) {
-      newObj[key] = replaceVariables((template as Record<string, unknown>)[key], variables)
-    }
-    return newObj
-  }
-  return template
-}
+import type { ExtractedData, PushService, HttpConfig } from "./types"
+import { TEMPLATES } from "~server_template"
 
 export async function executeWorkflow(
-  workflow: WorkflowRequest[],
+  services: PushService[],
   data: ExtractedData
 ) {
   const variables: Record<string, string> = {
@@ -41,46 +15,35 @@ export async function executeWorkflow(
 
   const results = []
 
-  for (const step of workflow) {
+  for (const service of services) {
+    if (!service.is_open) continue;
+
     try {
-      const url = replaceVariables(step.url, variables) as string
-      const headers = replaceVariables(step.headers || {}, variables) as Record<string, string>
-      const body = replaceVariables(step.body, variables)
-
-      const response = await axios({
-        url,
-        method: step.method,
-        headers,
-        data: body
-      })
-
-      results.push({
-        success: true,
-        status: response.status,
-        data: response.data
-      })
-    } catch (error: unknown) {
-      console.error("Workflow step failed", error)
+      let result;
+      const handler = TEMPLATES[service.server_type as keyof typeof TEMPLATES]
       
-      let errorMessage = "Unknown error"
-      let errorResponse = undefined
-
-      if (isAxiosError(error)) {
-          errorMessage = error.message
-          errorResponse = error.response?.data
-      } else if (error instanceof Error) {
-          errorMessage = error.message
+      if (handler) {
+         result = await handler(service.config as any, variables)
       } else {
-          errorMessage = String(error)
+         // Fallback or error
+         throw new Error(`Unknown server type: ${service.server_type}`)
       }
 
       results.push({
-        success: false,
-        error: errorMessage,
-        response: errorResponse
+        serviceName: service.name,
+        success: result.success,
+        status: result.status,
+        data: result.data,
+        error: result.error,
+        response: result.response
       })
-      // Stop execution on error?
-      throw new Error(`Step failed: ${errorMessage}`)
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      results.push({
+        serviceName: service.name,
+        success: false,
+        error: errorMessage
+      })
     }
   }
 

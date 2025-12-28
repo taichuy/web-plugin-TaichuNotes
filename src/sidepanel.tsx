@@ -4,7 +4,7 @@ import "vditor/dist/index.css"
 import { useStorage } from "@plasmohq/storage/hook"
 import { localStorage, syncStorage } from "~lib/storage"
 import { executeWorkflow } from "~lib/workflow"
-import type { ExtractedData, ExtractMode, WorkflowRequest } from "~lib/types"
+import type { ExtractedData, ExtractMode, PushService } from "~lib/types"
 import { 
   ConfigProvider, 
   Layout, 
@@ -18,7 +18,16 @@ import {
   Space,
   Alert,
   Menu,
-  Select
+  Select,
+  List,
+  Switch,
+  Modal,
+  Form,
+  Card,
+  Popconfirm,
+  Tag,
+  Row,
+  Col
 } from "antd"
 import { 
   SettingOutlined, 
@@ -30,7 +39,9 @@ import {
   ArrowLeftOutlined,
   DeleteOutlined,
   CopyOutlined,
-  DownloadOutlined
+  DownloadOutlined,
+  PlusOutlined,
+  EditOutlined
 } from "@ant-design/icons"
 
 import "~style.css"
@@ -69,17 +80,23 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   }
 }
 
-const DEFAULT_WORKFLOW: WorkflowRequest[] = [
+const DEFAULT_SERVICES: PushService[] = [
   {
-    url: "https://httpbin.org/post",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: {
-      title: "$web_title",
-      content: "$main_text",
-      url: "$source_url"
+    name: "HTTP Bin Test",
+    description: "Post to httpbin for testing",
+    is_open: true,
+    server_type: "http",
+    config: {
+      url: "https://httpbin.org/post",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: {
+        title: "$web_title",
+        content: "$main_text",
+        url: "$source_url"
+      }
     }
   }
 ]
@@ -89,10 +106,10 @@ const SidePanelContent = () => {
     key: "current_clip",
     instance: localStorage
   })
-  const [workflowConfig, setWorkflowConfig] = useStorage<WorkflowRequest[]>({
-    key: "workflow_config",
+  const [servicesConfig, setServicesConfig] = useStorage<PushService[]>({
+    key: "services_config",
     instance: syncStorage
-  }, DEFAULT_WORKFLOW)
+  }, DEFAULT_SERVICES)
   
   const [userLanguage, setUserLanguage] = useStorage<string>({
     key: "user_language",
@@ -100,12 +117,17 @@ const SidePanelContent = () => {
   }, "zh")
   
   const [view, setView] = useState<"editor" | "settings">("editor")
-  const [activeSetting, setActiveSetting] = useState("workflow")
+  const [activeSetting, setActiveSetting] = useState("services")
   const [loading, setLoading] = useState(false)
   const [loadingTip, setLoadingTip] = useState("")
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [isVditorReady, setIsVditorReady] = useState(false)
   
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const [form] = Form.useForm()
+
   const vditorRef = useRef<Vditor | null>(null)
   const editorContainerRef = useRef<HTMLDivElement>(null)
   
@@ -182,6 +204,7 @@ const SidePanelContent = () => {
               "edit-mode",
               "both",
               "preview",
+              "export",
             ],
             cache: { enable: false },
             value: "", // Let useEffect handle initial content
@@ -352,17 +375,17 @@ const SidePanelContent = () => {
     const dataToSend = { ...currentClip, content }
     
     setLoading(true)
-    setLoadingTip("Executing workflow...")
+    setLoadingTip("Pushing to services...")
     
     try {
-      const results = await executeWorkflow(workflowConfig, dataToSend)
+      const results = await executeWorkflow(servicesConfig, dataToSend)
       const failed = results.filter(r => !r.success)
       
       if (failed.length > 0) {
-        throw new Error(`Failed requests: ${failed.length}`)
+        throw new Error(`${failed.length} service(s) failed. Check console for details.`)
       }
       
-      messageApi.success("Workflow executed successfully!")
+      messageApi.success("Pushed to services successfully!")
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : String(e)
       messageApi.error("Error: " + errorMessage)
@@ -371,9 +394,83 @@ const SidePanelContent = () => {
     }
   }
 
-  // Detect system theme for Ant Design - Already moved up
-  // const [isDarkMode, setIsDarkMode] = useState(false)
-  // ... (Removed duplicate declaration)
+  // Service Management Handlers
+  const handleAddService = () => {
+    setEditingIndex(null)
+    form.resetFields()
+    // Default values
+    form.setFieldsValue({
+      server_type: "http",
+      is_open: true,
+      config: JSON.stringify({
+        url: "",
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: {}
+      }, null, 2)
+    })
+    setIsModalOpen(true)
+  }
+
+  const handleEditService = (index: number) => {
+    const service = servicesConfig[index]
+    setEditingIndex(index)
+    form.setFieldsValue({
+      name: service.name,
+      description: service.description,
+      server_type: service.server_type,
+      is_open: service.is_open,
+      config: JSON.stringify(service.config, null, 2)
+    })
+    setIsModalOpen(true)
+  }
+
+  const handleDeleteService = (index: number) => {
+    const newServices = [...servicesConfig]
+    newServices.splice(index, 1)
+    setServicesConfig(newServices)
+    messageApi.success("Service deleted")
+  }
+
+  const handleToggleService = (index: number, checked: boolean) => {
+    const newServices = [...servicesConfig]
+    newServices[index] = { ...newServices[index], is_open: checked }
+    setServicesConfig(newServices)
+  }
+
+  const handleSaveService = async () => {
+    try {
+      const values = await form.validateFields()
+      let parsedConfig = {}
+      try {
+        parsedConfig = JSON.parse(values.config)
+      } catch (e) {
+        throw new Error("Invalid JSON in Config field")
+      }
+
+      const newService: PushService = {
+        name: values.name,
+        description: values.description,
+        server_type: values.server_type,
+        is_open: values.is_open,
+        config: parsedConfig
+      }
+
+      const newServices = [...servicesConfig]
+      if (editingIndex !== null) {
+        newServices[editingIndex] = newService
+      } else {
+        newServices.push(newService)
+      }
+      
+      setServicesConfig(newServices)
+      setIsModalOpen(false)
+      messageApi.success(editingIndex !== null ? "Service updated" : "Service added")
+    } catch (e: unknown) {
+       const errorMessage = e instanceof Error ? e.message : String(e)
+       messageApi.error(errorMessage)
+    }
+  }
 
   return (
     <ConfigProvider
@@ -489,32 +586,116 @@ const SidePanelContent = () => {
                 onClick={({ key }) => setActiveSetting(key)}
                 style={{ height: '100%', borderRight: 0, background: 'transparent' }}
                 items={[
-                  { key: 'workflow', label: chrome.i18n.getMessage("workflowConfig") },
+                  { key: 'services', label: chrome.i18n.getMessage("pushServices") },
                   { key: 'language', label: chrome.i18n.getMessage("language")},
                   { key: 'about', label: chrome.i18n.getMessage("aboutUs") },
                 ]}
               />
             </Sider>
             <Content style={{ padding: 16, overflowY: 'auto', background: isDarkMode ? '#000' : '#fff' }}>
-              {activeSetting === 'workflow' && (
+              {activeSetting === 'services' && (
                 <>
-                  <Title level={5}>{chrome.i18n.getMessage("workflowConfig")}</Title>
-                  <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                    <Title level={5} style={{ margin: 0 }}>{chrome.i18n.getMessage("pushServices")}</Title>
+                    <Button type="primary" icon={<PlusOutlined />} onClick={handleAddService}>Add Service</Button>
+                  </div>
+                  <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
                     Available variables: <Text code>$main_text</Text>, <Text code>$source_url</Text>, <Text code>$web_title</Text>, <Text code>$author</Text>
                   </Text>
-                  <TextArea 
-                    rows={15}
-                    value={JSON.stringify(workflowConfig, null, 2)}
-                    onChange={(e) => {
-                      try {
-                        const parsed = JSON.parse(e.target.value)
-                        setWorkflowConfig(parsed)
-                      } catch (_err) {
-                        // ignore invalid json while typing
-                      }
-                    }}
-                    style={{ fontFamily: 'monospace' }}
+                  
+                  <List
+                    dataSource={servicesConfig}
+                    renderItem={(item, index) => (
+                      <List.Item
+                        actions={[
+                          <Switch 
+                            checked={item.is_open} 
+                            onChange={(checked) => handleToggleService(index, checked)} 
+                            size="small"
+                          />,
+                          <Button type="text" icon={<EditOutlined />} onClick={() => handleEditService(index)} />,
+                          <Popconfirm title="Delete service?" onConfirm={() => handleDeleteService(index)}>
+                             <Button type="text" danger icon={<DeleteOutlined />} />
+                          </Popconfirm>
+                        ]}
+                      >
+                        <List.Item.Meta
+                          title={
+                            <Space>
+                              {item.name}
+                              <Tag color="blue">{item.server_type}</Tag>
+                            </Space>
+                          }
+                          description={item.description}
+                        />
+                      </List.Item>
+                    )}
                   />
+
+                  <Modal
+                    title={editingIndex !== null ? "Edit Service" : "Add Service"}
+                    open={isModalOpen}
+                    onOk={handleSaveService}
+                    onCancel={() => setIsModalOpen(false)}
+                    width={600}
+                  >
+                    <Form
+                      form={form}
+                      layout="vertical"
+                      initialValues={{ server_type: 'http', is_open: true }}
+                    >
+                      <Form.Item
+                        name="name"
+                        label="Service Name"
+                        rules={[{ required: true, message: 'Please enter service name' }]}
+                      >
+                        <Input placeholder="e.g. My Obsidian" />
+                      </Form.Item>
+                      
+                      <Form.Item
+                        name="description"
+                        label="Description"
+                      >
+                        <Input placeholder="e.g. Push to local obsidian server" />
+                      </Form.Item>
+                      
+                      <Form.Item
+                         name="is_open"
+                         valuePropName="checked"
+                         label="Enabled"
+                      >
+                         <Switch />
+                      </Form.Item>
+
+                      <Form.Item
+                        name="server_type"
+                        label="Server Type"
+                        rules={[{ required: true }]}
+                      >
+                        <Select options={[{ value: 'http', label: 'HTTP Request' }]} />
+                      </Form.Item>
+
+                      <Form.Item
+                        name="config"
+                        label="Configuration (JSON)"
+                        rules={[
+                          { required: true, message: 'Please enter configuration' },
+                          { 
+                            validator: (_, value) => {
+                               try {
+                                  JSON.parse(value)
+                                  return Promise.resolve()
+                               } catch (e) {
+                                  return Promise.reject(new Error("Invalid JSON"))
+                               }
+                            }
+                          }
+                        ]}
+                      >
+                        <TextArea rows={10} style={{ fontFamily: 'monospace' }} />
+                      </Form.Item>
+                    </Form>
+                  </Modal>
                 </>
               )}
               {activeSetting === 'language' && (
@@ -575,7 +756,7 @@ const SidePanelContent = () => {
               loading={loading}
               disabled={!currentClip}
             >
-              {chrome.i18n.getMessage("executeWorkflow")}
+              {chrome.i18n.getMessage("executePush")}
             </Button>
           </>
         )}
