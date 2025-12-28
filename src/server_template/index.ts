@@ -1,4 +1,5 @@
 import { HttpTemplate } from "./http"
+import { NocobaseTemplate } from "./nocobase"
 import { TaichuyTemplate } from "./taichuy"
 import type { ServiceTemplate } from "./types"
 
@@ -6,14 +7,16 @@ import type { ServiceTemplate } from "./types"
 // but for now keeping TEMPLATES map for backward compatibility is safe)
 export const TEMPLATES = {
   http: HttpTemplate.handler,
-  taichuy: TaichuyTemplate.handler
+  taichuy: TaichuyTemplate.handler,
+  nocobase: NocobaseTemplate.handler
 }
 
 export type TemplateType = keyof typeof TEMPLATES
 
 export const SERVICE_REGISTRY: Record<string, ServiceTemplate> = {
   http: HttpTemplate,
-  taichuy: TaichuyTemplate
+  taichuy: TaichuyTemplate,
+  nocobase: NocobaseTemplate
 }
 
 export const getServiceTemplate = (type: string): ServiceTemplate => {

@@ -10,4 +10,5 @@ export interface ServiceTemplate {
   FormItems: React.FC
   processConfigBeforeSave: (values: any) => any
   processConfigForEdit: (config: any) => any
+  validate?: (config: any) => boolean
 }

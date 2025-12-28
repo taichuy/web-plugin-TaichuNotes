@@ -48,5 +48,8 @@ export const TaichuyTemplate: ServiceTemplate = {
   },
   processConfigForEdit: (config: any) => {
     return { apiKey: config.apiKey || "" }
+  },
+  validate: (config: any) => {
+    return !!(config && config.apiKey && config.apiKey.trim() !== "")
   }
 }

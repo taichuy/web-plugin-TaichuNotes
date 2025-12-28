@@ -100,6 +100,15 @@ const DEFAULT_SERVICES: PushService[] = [
         url: "$source_url"
       }
     }
+  },
+  {
+    name: "太初y",
+    description: "从最初问题开始构建智慧",
+    is_open: false,
+    server_type: "taichuy",
+    config: {
+      apiKey: ""
+    }
   }
 ]
 
@@ -454,6 +463,16 @@ const SidePanelContent = () => {
   }
 
   const handleToggleService = (index: number, checked: boolean) => {
+    if (checked) {
+      const service = servicesConfig[index]
+      const template = getServiceTemplate(service.server_type)
+      if (template.validate && !template.validate(service.config)) {
+         messageApi.warning("请先完善服务配置信息")
+         handleEditService(index)
+         return
+      }
+    }
+
     const newServices = [...servicesConfig]
     newServices[index] = { ...newServices[index], is_open: checked }
     setServicesConfig(newServices)

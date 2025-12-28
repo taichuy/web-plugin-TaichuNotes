@@ -86,5 +86,8 @@ export const HttpTemplate: ServiceTemplate = {
     return {
       config: JSON.stringify(config, null, 2)
     }
+  },
+  validate: (config: any) => {
+    return !!(config && config.url && config.method)
   }
 }
