@@ -210,7 +210,6 @@ const SidePanelContent = () => {
               "bold",
               "italic",
               "strike",
-              "link",
               "|",
               "list",
               "ordered-list",
@@ -222,8 +221,7 @@ const SidePanelContent = () => {
               "|",
               "edit-mode",
               "both",
-              "preview",
-              "export",
+              "preview"
             ],
             cache: { enable: false },
             value: "", // Let useEffect handle initial content
@@ -836,17 +834,17 @@ const SidePanelContent = () => {
         {view === "editor" && (
           <>
             <Space size="small">
-               <Tooltip title={chrome.i18n.getMessage("clear")}>
-                  <Button danger icon={<DeleteOutlined />} onClick={handleClear} />
-               </Tooltip>
                <Tooltip title={chrome.i18n.getMessage("copy")}>
                   <Button icon={<CopyOutlined />} onClick={handleCopy} />
+               </Tooltip>
+              <Tooltip title="复制给 AI">
+                  <Button icon={<RobotOutlined />} onClick={handleCopyToAI} />
                </Tooltip>
                <Tooltip title={chrome.i18n.getMessage("download")}>
                   <Button icon={<DownloadOutlined />} onClick={handleDownload} />
                </Tooltip>
-               <Tooltip title="复制给 AI">
-                  <Button icon={<RobotOutlined />} onClick={handleCopyToAI} />
+               <Tooltip title={chrome.i18n.getMessage("clear")}>
+                  <Button danger icon={<DeleteOutlined />} onClick={handleClear} />
                </Tooltip>
             </Space>
             <Button 
