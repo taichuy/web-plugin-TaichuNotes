@@ -16,7 +16,9 @@ import {
   theme, 
   Typography,
   Space,
-  Alert
+  Alert,
+  Menu,
+  Select
 } from "antd"
 import { 
   SettingOutlined, 
@@ -29,12 +31,14 @@ import {
   WarningOutlined,
   DeleteOutlined,
   CopyOutlined,
-  DownloadOutlined
+  DownloadOutlined,
+  GlobalOutlined,
+  InfoCircleOutlined
 } from "@ant-design/icons"
 
 import "~style.css"
 
-const { Header, Content, Footer } = Layout
+const { Header, Content, Footer, Sider } = Layout
 const { TextArea } = Input
 const { Title, Text } = Typography
 
@@ -94,6 +98,7 @@ const SidePanelContent = () => {
   }, DEFAULT_WORKFLOW)
   
   const [view, setView] = useState<"editor" | "settings">("editor")
+  const [activeSetting, setActiveSetting] = useState("workflow")
   const [loading, setLoading] = useState(false)
   const [loadingTip, setLoadingTip] = useState("")
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
@@ -201,6 +206,14 @@ const SidePanelContent = () => {
       }
       
       initVditor()
+    }
+    
+    return () => {
+      // Cleanup Vditor instance when unmounting or switching views
+      if (vditorRef.current) {
+        vditorRef.current.destroy()
+        vditorRef.current = null
+      }
     }
   }, [view, isDarkMode]) // Removed currentClip?.content to prevent re-init on content change
 
@@ -458,25 +471,75 @@ const SidePanelContent = () => {
             </div>
           </>
         ) : (
-          <div style={{ padding: 16, height: '100%', overflowY: 'auto' }}>
-            <Title level={5}>Workflow Configuration</Title>
-            <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
-              Available variables: <Text code>$main_text</Text>, <Text code>$source_url</Text>, <Text code>$web_title</Text>, <Text code>$author</Text>
-            </Text>
-            <TextArea 
-              rows={15}
-              value={JSON.stringify(workflowConfig, null, 2)}
-              onChange={(e) => {
-                try {
-                  const parsed = JSON.parse(e.target.value)
-                  setWorkflowConfig(parsed)
-                } catch (_err) {
-                  // ignore invalid json while typing
-                }
+          <Layout style={{ height: '100%', background: 'transparent' }}>
+            <Sider 
+              width={120} 
+              theme={isDarkMode ? 'dark' : 'light'} 
+              style={{ 
+                borderRight: `1px solid ${isDarkMode ? '#303030' : '#f0f0f0'}`,
+                background: isDarkMode ? '#141414' : '#fff'
               }}
-              style={{ fontFamily: 'monospace' }}
-            />
-          </div>
+            >
+              <Menu
+                mode="inline"
+                className="side-menu"
+                selectedKeys={[activeSetting]}
+                onClick={({ key }) => setActiveSetting(key)}
+                style={{ height: '100%', borderRight: 0, background: 'transparent' }}
+                items={[
+                  { key: 'workflow', label: '工作流配置' },
+                  { key: 'language', label: '语言'},
+                  { key: 'about', label: '关于我们' },
+                ]}
+              />
+            </Sider>
+            <Content style={{ padding: 16, overflowY: 'auto', background: isDarkMode ? '#000' : '#fff' }}>
+              {activeSetting === 'workflow' && (
+                <>
+                  <Title level={5}>工作流配置</Title>
+                  <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+                    Available variables: <Text code>$main_text</Text>, <Text code>$source_url</Text>, <Text code>$web_title</Text>, <Text code>$author</Text>
+                  </Text>
+                  <TextArea 
+                    rows={15}
+                    value={JSON.stringify(workflowConfig, null, 2)}
+                    onChange={(e) => {
+                      try {
+                        const parsed = JSON.parse(e.target.value)
+                        setWorkflowConfig(parsed)
+                      } catch (_err) {
+                        // ignore invalid json while typing
+                      }
+                    }}
+                    style={{ fontFamily: 'monospace' }}
+                  />
+                </>
+              )}
+              {activeSetting === 'language' && (
+                <div>
+                  <Title level={5}>语言设置</Title>
+                  <Select 
+                    defaultValue="zh" 
+                    style={{ width: 120 }} 
+                    options={[
+                      { value: 'en', label: 'English' }, 
+                      { value: 'zh', label: '中文' }
+                    ]} 
+                  />
+                </div>
+              )}
+              {activeSetting === 'about' && (
+                <div>
+                  <Title level={5}>关于我们</Title>
+                  <Text strong>Taichuy Web Clipper</Text>
+                  <br/>
+                  <Text type="secondary">版本: 0.0.1</Text>
+                  <br/><br/>
+                  <Text>一个强大的网页剪藏工具，支持自定义工作流，助您高效管理知识。</Text>
+                </div>
+              )}
+            </Content>
+          </Layout>
         )}
       </Content>
 

@@ -83,3 +83,21 @@ body {
   height: 16px !important;
   width: 16px !important;
 }
+
+/* Side Menu Word Wrap */
+.side-menu .ant-menu-item {
+  height: auto !important;
+  min-height: 40px;
+  line-height: 1.5 !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  white-space: normal !important;
+}
+
+.side-menu .ant-menu-title-content {
+  white-space: normal !important;
+  text-overflow: unset !important;
+  overflow: visible !important;
+  display: inline-block;
+  vertical-align: middle;
+}
