@@ -29,20 +29,23 @@ export const TaichuyTemplate: ServiceTemplate = {
   defaultName: "太初y",
   defaultDescription: "从最初问题开始构建智慧",
   handler: handleTaichuy,
-  FormItems: () => (
-    <Form.Item
-      name="apiKey"
-      label="API Key"
-      extra={
-        <span>
-          Get your API Key from <a href="https://y.taichu.xyz/profile" target="_blank" rel="noopener noreferrer">TaichuY Profile</a>
-        </span>
-      }
-      rules={[{ required: true, message: 'Please enter API Key' }]}
-    >
-      <Input.Password placeholder="Enter your TaichuY API Key" />
-    </Form.Item>
-  ),
+  FormItems: () => {
+    const { t } = useI18n()
+    return (
+      <Form.Item
+        name="apiKey"
+        label={t("apiKey")}
+        extra={
+          <span>
+            {t("getApiKeyFrom")} <a href="https://y.taichu.xyz/profile" target="_blank" rel="noopener noreferrer">{t("taichuyProfile")}</a>
+          </span>
+        }
+        rules={[{ required: true, message: t("pleaseEnterApiKey") }]}
+      >
+        <Input.Password placeholder={t("enterApiKey")} />
+      </Form.Item>
+    )
+  },
   processConfigBeforeSave: (values: any) => {
     return { apiKey: values.apiKey }
   },

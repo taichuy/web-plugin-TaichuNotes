@@ -51,7 +51,6 @@
     "message": "About Us",
     "description": "About Us menu item"
   },
-
   "smartExtract": {
     "message": "Smart",
     "description": "Smart extract button"
@@ -71,5 +70,313 @@
   "version": {
     "message": "Version",
     "description": "Version label"
+  },
+  "somethingWentWrong": {
+    "message": "Something went wrong.",
+    "description": "Error boundary message"
+  },
+  "reloadSidepanel": {
+    "message": "Reload Sidepanel",
+    "description": "Reload button"
+  },
+  "autoDetectContent": {
+    "message": "Auto-detect content",
+    "description": "Tooltip for smart extract"
+  },
+  "fullPageHTML": {
+    "message": "Full page HTML",
+    "description": "Tooltip for full page"
+  },
+  "selectElementOnPage": {
+    "message": "Select element on page",
+    "description": "Tooltip for pick element"
+  },
+  "copyToAI": {
+    "message": "Copy for AI",
+    "description": "Copy to AI button"
+  },
+  "aiPromptConfig": {
+    "message": "AI Prompt Config",
+    "description": "AI Prompt Config title"
+  },
+  "variableDescription": {
+    "message": "Variable Description",
+    "description": "Variable Description title"
+  },
+  "variableDescMainText": {
+    "message": "$main_text: Content",
+    "description": "Variable description"
+  },
+  "variableDescWebTitle": {
+    "message": "$web_title: Page Title",
+    "description": "Variable description"
+  },
+  "variableDescSourceUrl": {
+    "message": "$source_url: Source URL",
+    "description": "Variable description"
+  },
+  "variableDescAuthor": {
+    "message": "$author: Author",
+    "description": "Variable description"
+  },
+  "aiPromptPlaceholder": {
+    "message": "$main_text\n\nSummarize the above content into a complete article",
+    "description": "Placeholder for AI prompt"
+  },
+  "addService": {
+    "message": "Add Service",
+    "description": "Add Service button"
+  },
+  "editService": {
+    "message": "Edit Service",
+    "description": "Edit Service title"
+  },
+  "serviceName": {
+    "message": "Service Name",
+    "description": "Service Name label"
+  },
+  "serviceDescription": {
+    "message": "Description",
+    "description": "Service Description label"
+  },
+  "serviceEnabled": {
+    "message": "Enabled",
+    "description": "Service Enabled label"
+  },
+  "serverType": {
+    "message": "Server Type",
+    "description": "Server Type label"
+  },
+  "deleteServiceConfirm": {
+    "message": "Delete service?",
+    "description": "Delete confirmation"
+  },
+  "serviceDeleted": {
+    "message": "Service deleted",
+    "description": "Service deleted message"
+  },
+  "serviceUpdated": {
+    "message": "Service updated",
+    "description": "Service updated message"
+  },
+  "serviceAdded": {
+    "message": "Service added",
+    "description": "Service added message"
+  },
+  "pleaseEnterServiceName": {
+    "message": "Please enter service name",
+    "description": "Validation message"
+  },
+  "pleaseCompleteConfig": {
+    "message": "Please complete service configuration",
+    "description": "Validation message"
+  },
+  "noContentToCopy": {
+    "message": "No content to copy",
+    "description": "Warning message"
+  },
+  "copiedToClipboard": {
+    "message": "Copied to clipboard",
+    "description": "Success message"
+  },
+  "failedToCopy": {
+    "message": "Failed to copy",
+    "description": "Error message"
+  },
+  "downloadStarted": {
+    "message": "Download started",
+    "description": "Success message"
+  },
+  "failedToDownload": {
+    "message": "Failed to download",
+    "description": "Error message"
+  },
+  "noContentToDownload": {
+    "message": "No content to download",
+    "description": "Warning message"
+  },
+  "noContentAvailable": {
+    "message": "No content available",
+    "description": "Warning message"
+  },
+  "copiedAIPrompt": {
+    "message": "Copied AI Prompt",
+    "description": "Success message"
+  },
+  "extractingContent": {
+    "message": "Extracting content...",
+    "description": "Loading message"
+  },
+  "noActiveTab": {
+    "message": "No active tab found.",
+    "description": "Error message"
+  },
+  "cannotClipSystem": {
+    "message": "Cannot clip content from browser system pages.",
+    "description": "Error message"
+  },
+  "pleaseSelectElement": {
+    "message": "Please select an element on the page...",
+    "description": "Loading message"
+  },
+  "refreshPage": {
+    "message": "Please refresh the page to enable the clipper.",
+    "description": "Error message"
+  },
+  "extractedSuccessfully": {
+    "message": "Extracted successfully",
+    "description": "Success message"
+  },
+  "extractionFailed": {
+    "message": "Extraction failed",
+    "description": "Error message"
+  },
+  "pushingToServices": {
+    "message": "Pushing to services...",
+    "description": "Loading message"
+  },
+  "pushSuccess": {
+    "message": "Pushed to services successfully!",
+    "description": "Success message"
+  },
+  "serviceFailed": {
+    "message": "{n} service(s) failed. Check console for details.",
+    "description": "Error message"
+  },
+  "editorCleared": {
+    "message": "Editor cleared",
+    "description": "Success message"
+  },
+  "backToEditor": {
+    "message": "Back to Editor",
+    "description": "Tooltip"
+  },
+  "aiSettings": {
+    "message": "AI Prompt",
+    "description": "Menu item"
+  },
+  "availableVariables": {
+    "message": "Available variables:",
+    "description": "Text"
+  },
+  "apiKey": {
+    "message": "API Key",
+    "description": "API Key label"
+  },
+  "getApiKeyFrom": {
+    "message": "Get your API Key from",
+    "description": "Instruction"
+  },
+  "taichuyProfile": {
+    "message": "TaichuY Profile",
+    "description": "Link text"
+  },
+  "enterApiKey": {
+    "message": "Enter your TaichuY API Key",
+    "description": "Placeholder"
+  },
+  "pleaseEnterApiKey": {
+    "message": "Please enter API Key",
+    "description": "Validation message"
+  },
+  "httpRequest": {
+    "message": "HTTP Request",
+    "description": "Service label"
+  },
+  "httpService": {
+    "message": "HTTP Service",
+    "description": "Default name"
+  },
+  "genericHttpRequest": {
+    "message": "Generic HTTP Request",
+    "description": "Default description"
+  },
+  "configurationJson": {
+    "message": "Configuration (JSON)",
+    "description": "Label"
+  },
+  "pleaseEnterConfig": {
+    "message": "Please enter configuration",
+    "description": "Validation"
+  },
+  "invalidJson": {
+    "message": "Invalid JSON",
+    "description": "Error"
+  },
+  "invalidJsonInConfig": {
+    "message": "Invalid JSON in Config field",
+    "description": "Error"
+  },
+  "nocobaseDomain": {
+    "message": "NocoBase Domain",
+    "description": "Label"
+  },
+  "pleaseEnterDomain": {
+    "message": "Please enter NocoBase domain",
+    "description": "Validation"
+  },
+  "domainExample": {
+    "message": "e.g.: https://wwww.taichuy.com",
+    "description": "Extra"
+  },
+  "collectionName": {
+    "message": "Collection Name",
+    "description": "Label"
+  },
+  "pleaseEnterCollection": {
+    "message": "Please enter collection name",
+    "description": "Validation"
+  },
+  "collectionExample": {
+    "message": "e.g.: collection",
+    "description": "Extra"
+  },
+  "urlParams": {
+    "message": "URL Params",
+    "description": "Label"
+  },
+  "urlParamsExample": {
+    "message": "Optional, e.g.: triggerWorkflows=123",
+    "description": "Extra"
+  },
+  "fieldMappingConfig": {
+    "message": "Field Mapping Configuration",
+    "description": "Divider"
+  },
+  "pageTitleField": {
+    "message": "Page Title Field",
+    "description": "Label"
+  },
+  "defaultTitle": {
+    "message": "Default: title",
+    "description": "Placeholder"
+  },
+  "pleaseEnterTitleField": {
+    "message": "Please enter title field name",
+    "description": "Validation"
+  },
+  "pageUrlField": {
+    "message": "Page URL Field",
+    "description": "Label"
+  },
+  "pageContentField": {
+    "message": "Page Content Field",
+    "description": "Label"
+  },
+  "pleaseEnterUrlField": {
+    "message": "Please enter URL field name",
+    "description": "Validation"
+  },
+  "defaultUrl": {
+    "message": "Default: url",
+    "description": "Placeholder"
+  },
+  "pleaseEnterContentField": {
+    "message": "Please enter content field name",
+    "description": "Validation"
+  },
+  "defaultContent": {
+    "message": "Default: content",
+    "description": "Placeholder"
   }
 }

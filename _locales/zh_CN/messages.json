@@ -51,7 +51,6 @@
     "message": "关于我们",
     "description": "关于我们菜单项"
   },
-
   "smartExtract": {
     "message": "智能",
     "description": "智能提取按钮"
@@ -71,5 +70,313 @@
   "version": {
     "message": "版本",
     "description": "版本标签"
+  },
+  "somethingWentWrong": {
+    "message": "出错了",
+    "description": "Error boundary message"
+  },
+  "reloadSidepanel": {
+    "message": "重新加载侧边栏",
+    "description": "Reload button"
+  },
+  "autoDetectContent": {
+    "message": "自动检测内容",
+    "description": "Tooltip for smart extract"
+  },
+  "fullPageHTML": {
+    "message": "完整 HTML",
+    "description": "Tooltip for full page"
+  },
+  "selectElementOnPage": {
+    "message": "在页面上选择元素",
+    "description": "Tooltip for pick element"
+  },
+  "copyToAI": {
+    "message": "复制给 AI",
+    "description": "Copy to AI button"
+  },
+  "aiPromptConfig": {
+    "message": "AI 提示词配置",
+    "description": "AI Prompt Config title"
+  },
+  "variableDescription": {
+    "message": "变量说明",
+    "description": "Variable Description title"
+  },
+  "variableDescMainText": {
+    "message": "$main_text: 正文内容",
+    "description": "Variable description"
+  },
+  "variableDescWebTitle": {
+    "message": "$web_title: 网页标题",
+    "description": "Variable description"
+  },
+  "variableDescSourceUrl": {
+    "message": "$source_url: 来源链接",
+    "description": "Variable description"
+  },
+  "variableDescAuthor": {
+    "message": "$author: 作者",
+    "description": "Variable description"
+  },
+  "aiPromptPlaceholder": {
+    "message": "$main_text\n\n将上述内容整理为一个完整文章",
+    "description": "Placeholder for AI prompt"
+  },
+  "addService": {
+    "message": "添加服务",
+    "description": "Add Service button"
+  },
+  "editService": {
+    "message": "编辑服务",
+    "description": "Edit Service title"
+  },
+  "serviceName": {
+    "message": "服务名称",
+    "description": "Service Name label"
+  },
+  "serviceDescription": {
+    "message": "描述",
+    "description": "Service Description label"
+  },
+  "serviceEnabled": {
+    "message": "启用",
+    "description": "Service Enabled label"
+  },
+  "serverType": {
+    "message": "服务类型",
+    "description": "Server Type label"
+  },
+  "deleteServiceConfirm": {
+    "message": "确认删除服务？",
+    "description": "Delete confirmation"
+  },
+  "serviceDeleted": {
+    "message": "服务已删除",
+    "description": "Service deleted message"
+  },
+  "serviceUpdated": {
+    "message": "服务已更新",
+    "description": "Service updated message"
+  },
+  "serviceAdded": {
+    "message": "服务已添加",
+    "description": "Service added message"
+  },
+  "pleaseEnterServiceName": {
+    "message": "请输入服务名称",
+    "description": "Validation message"
+  },
+  "pleaseCompleteConfig": {
+    "message": "请先完善服务配置信息",
+    "description": "Validation message"
+  },
+  "noContentToCopy": {
+    "message": "没有内容可复制",
+    "description": "Warning message"
+  },
+  "copiedToClipboard": {
+    "message": "已复制到剪贴板",
+    "description": "Success message"
+  },
+  "failedToCopy": {
+    "message": "复制失败",
+    "description": "Error message"
+  },
+  "downloadStarted": {
+    "message": "下载已开始",
+    "description": "Success message"
+  },
+  "failedToDownload": {
+    "message": "下载失败",
+    "description": "Error message"
+  },
+  "noContentToDownload": {
+    "message": "没有内容可下载",
+    "description": "Warning message"
+  },
+  "noContentAvailable": {
+    "message": "没有可用内容",
+    "description": "Warning message"
+  },
+  "copiedAIPrompt": {
+    "message": "已复制 AI 提示词内容",
+    "description": "Success message"
+  },
+  "extractingContent": {
+    "message": "正在提取内容...",
+    "description": "Loading message"
+  },
+  "noActiveTab": {
+    "message": "未找到活动标签页。",
+    "description": "Error message"
+  },
+  "cannotClipSystem": {
+    "message": "无法从浏览器系统页面剪切内容。",
+    "description": "Error message"
+  },
+  "pleaseSelectElement": {
+    "message": "请在页面上选择一个元素...",
+    "description": "Loading message"
+  },
+  "refreshPage": {
+    "message": "请刷新页面以启用剪藏工具。",
+    "description": "Error message"
+  },
+  "extractedSuccessfully": {
+    "message": "提取成功",
+    "description": "Success message"
+  },
+  "extractionFailed": {
+    "message": "提取失败",
+    "description": "Error message"
+  },
+  "pushingToServices": {
+    "message": "正在推送到服务...",
+    "description": "Loading message"
+  },
+  "pushSuccess": {
+    "message": "成功推送到服务！",
+    "description": "Success message"
+  },
+  "serviceFailed": {
+    "message": "{n} 个服务失败。请查看控制台了解详情。",
+    "description": "Error message"
+  },
+  "editorCleared": {
+    "message": "编辑器已清空",
+    "description": "Success message"
+  },
+  "backToEditor": {
+    "message": "返回编辑器",
+    "description": "Tooltip"
+  },
+  "aiSettings": {
+    "message": "AI 提示词",
+    "description": "Menu item"
+  },
+  "availableVariables": {
+    "message": "可用变量：",
+    "description": "Text"
+  },
+  "apiKey": {
+    "message": "API Key",
+    "description": "API Key label"
+  },
+  "getApiKeyFrom": {
+    "message": "获取 API Key：",
+    "description": "Instruction"
+  },
+  "taichuyProfile": {
+    "message": "太初y 个人中心",
+    "description": "Link text"
+  },
+  "enterApiKey": {
+    "message": "请输入您的太初y API Key",
+    "description": "Placeholder"
+  },
+  "pleaseEnterApiKey": {
+    "message": "请输入 API Key",
+    "description": "Validation message"
+  },
+  "httpRequest": {
+    "message": "HTTP 请求",
+    "description": "Service label"
+  },
+  "httpService": {
+    "message": "HTTP 服务",
+    "description": "Default name"
+  },
+  "genericHttpRequest": {
+    "message": "通用 HTTP 请求",
+    "description": "Default description"
+  },
+  "configurationJson": {
+    "message": "配置 (JSON)",
+    "description": "Label"
+  },
+  "pleaseEnterConfig": {
+    "message": "请输入配置",
+    "description": "Validation"
+  },
+  "invalidJson": {
+    "message": "无效的 JSON",
+    "description": "Error"
+  },
+  "invalidJsonInConfig": {
+    "message": "配置字段中包含无效的 JSON",
+    "description": "Error"
+  },
+  "nocobaseDomain": {
+    "message": "NocoBase 域名",
+    "description": "Label"
+  },
+  "pleaseEnterDomain": {
+    "message": "请输入 NocoBase 域名",
+    "description": "Validation"
+  },
+  "domainExample": {
+    "message": "例如: https://wwww.taichuy.com",
+    "description": "Extra"
+  },
+  "collectionName": {
+    "message": "存储表名 (Collection)",
+    "description": "Label"
+  },
+  "pleaseEnterCollection": {
+    "message": "请输入存储表名",
+    "description": "Validation"
+  },
+  "collectionExample": {
+    "message": "例如: collection",
+    "description": "Extra"
+  },
+  "urlParams": {
+    "message": "URL 参数",
+    "description": "Label"
+  },
+  "urlParamsExample": {
+    "message": "可选，例如: triggerWorkflows=123",
+    "description": "Extra"
+  },
+  "fieldMappingConfig": {
+    "message": "字段映射配置",
+    "description": "Divider"
+  },
+  "pageTitleField": {
+    "message": "当前页面标题字段",
+    "description": "Label"
+  },
+  "defaultTitle": {
+    "message": "默认为 title",
+    "description": "Placeholder"
+  },
+  "pleaseEnterTitleField": {
+    "message": "请输入标题字段名",
+    "description": "Validation"
+  },
+  "pageUrlField": {
+    "message": "当前页面 URL 字段",
+    "description": "Label"
+  },
+  "pageContentField": {
+    "message": "当前页面正文字段",
+    "description": "Label"
+  },
+  "pleaseEnterUrlField": {
+    "message": "请输入 URL 字段名",
+    "description": "Validation"
+  },
+  "defaultUrl": {
+    "message": "默认为 url",
+    "description": "Placeholder"
+  },
+  "pleaseEnterContentField": {
+    "message": "请输入正文字段名",
+    "description": "Validation"
+  },
+  "defaultContent": {
+    "message": "默认为 content",
+    "description": "Placeholder"
   }
 }

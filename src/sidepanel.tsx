@@ -5,6 +5,7 @@ import { useStorage } from "@plasmohq/storage/hook"
 import { localStorage, syncStorage } from "~lib/storage"
 import { getServiceOptions, getServiceTemplate } from "~server_template"
 import type { ExtractedData, ExtractMode, PushService } from "~lib/types"
+import { useI18n, type Locale } from "~lib/i18n"
 import { 
   ConfigProvider, 
   Layout, 
@@ -115,6 +116,8 @@ const DEFAULT_SERVICES: PushService[] = [
 ]
 
 const SidePanelContent = () => {
+  const { t, lang: userLanguage, setLang: setUserLanguage } = useI18n()
+
   const [currentClip, setCurrentClip] = useStorage<ExtractedData | null>({
     key: "current_clip",
     instance: localStorage
@@ -123,11 +126,6 @@ const SidePanelContent = () => {
     key: "services_config",
     instance: syncStorage
   }, DEFAULT_SERVICES)
-  
-  const [userLanguage, setUserLanguage] = useStorage<string>({
-    key: "user_language",
-    instance: syncStorage
-  }, "zh")
 
   const [aiPromptTemplate, setAiPromptTemplate] = useStorage<string>({
     key: "ai_prompt_template",
@@ -287,22 +285,22 @@ const SidePanelContent = () => {
     vditorRef.current?.setValue("")
     setCurrentClip(null)
     lastProcessedContent.current = null
-    messageApi.success("Editor cleared")
+    messageApi.success(t("editorCleared"))
   }
 
   const handleCopy = async () => {
     if (!isVditorReady) return
     const content = vditorRef.current?.getValue() || ""
     if (!content) {
-      messageApi.warning("No content to copy")
+      messageApi.warning(t("noContentToCopy"))
       return
     }
     try {
       await navigator.clipboard.writeText(content)
-      messageApi.success("Copied to clipboard")
+      messageApi.success(t("copiedToClipboard"))
     } catch (err) {
       console.error(err)
-      messageApi.error("Failed to copy")
+      messageApi.error(t("failedToCopy"))
     }
   }
 
@@ -310,7 +308,7 @@ const SidePanelContent = () => {
     if (!isVditorReady) return
     const content = vditorRef.current?.getValue() || ""
     if (!content) {
-      messageApi.warning("No content to download")
+      messageApi.warning(t("noContentToDownload"))
       return
     }
     try {
@@ -323,16 +321,16 @@ const SidePanelContent = () => {
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
-      messageApi.success("Download started")
+      messageApi.success(t("downloadStarted"))
     } catch (err) {
       console.error(err)
-      messageApi.error("Failed to download")
+      messageApi.error(t("failedToDownload"))
     }
   }
 
   const handleCopyToAI = async () => {
     if (!currentClip) {
-       messageApi.warning("No content available")
+       messageApi.warning(t("noContentAvailable"))
        return
     }
     
@@ -348,36 +346,36 @@ const SidePanelContent = () => {
     try {
       const textToCopy = replaceVariables(aiPromptTemplate, variables) as string
       await navigator.clipboard.writeText(textToCopy)
-      messageApi.success("已复制 AI 提示词内容")
+      messageApi.success(t("copiedAIPrompt"))
     } catch (err) {
       console.error(err)
-      messageApi.error("复制失败")
+      messageApi.error(t("failedToCopy"))
     }
   }
 
   const handleExtract = async (mode: ExtractMode) => {
     setLoading(true)
-    setLoadingTip("Extracting content...")
+    setLoadingTip(t("extractingContent"))
     
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
       if (!tab?.id) {
-         throw new Error("No active tab found.")
+         throw new Error(t("noActiveTab"))
       }
       
       // Check if we can inject script/send message (avoid chrome:// urls)
       if (tab.url?.startsWith("chrome://") || tab.url?.startsWith("edge://") || tab.url?.startsWith("about:")) {
-         throw new Error("Cannot clip content from browser system pages.")
+         throw new Error(t("cannotClipSystem"))
       }
 
       if (mode === "selection") {
-        setLoadingTip("Please select an element on the page...")
+        setLoadingTip(t("pleaseSelectElement"))
         try {
           await chrome.tabs.sendMessage(tab.id, { action: "extract", mode: "selection" })
         } catch (err) {
            const errorMessage = err instanceof Error ? err.message : String(err)
            if (errorMessage.includes("Could not establish connection")) {
-              throw new Error("Please refresh the page to enable the clipper.")
+              throw new Error(t("refreshPage"))
            }
            throw err
         }
@@ -388,14 +386,14 @@ const SidePanelContent = () => {
         const response = await chrome.tabs.sendMessage(tab.id, { action: "extract", mode })
         if (response.status === "success") {
           setCurrentClip(response.data)
-          messageApi.success("Extracted successfully")
+          messageApi.success(t("extractedSuccessfully"))
         } else {
-          throw new Error(response.message || "Extraction failed")
+          throw new Error(response.message || t("extractionFailed"))
         }
       } catch (err: unknown) {
          const errorMessage = err instanceof Error ? err.message : String(err)
          if (errorMessage.includes("Could not establish connection")) {
-            throw new Error("Please refresh the page to enable the clipper.")
+            throw new Error(t("refreshPage"))
          }
          throw err
       }
@@ -417,17 +415,17 @@ const SidePanelContent = () => {
     const dataToSend = { ...currentClip, content }
     
     setLoading(true)
-    setLoadingTip("Pushing to services...")
+    setLoadingTip(t("pushingToServices"))
     
     try {
       const results = await executeWorkflow(servicesConfig, dataToSend)
       const failed = results.filter(r => !r.success)
       
       if (failed.length > 0) {
-        throw new Error(`${failed.length} service(s) failed. Check console for details.`)
+        throw new Error(t("serviceFailed", { n: failed.length }))
       }
       
-      messageApi.success("Pushed to services successfully!")
+      messageApi.success(t("pushSuccess"))
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : String(e)
       messageApi.error("Error: " + errorMessage)
@@ -567,10 +565,10 @@ const SidePanelContent = () => {
           lineHeight: '48px'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Title level={5} style={{ margin: 0, color: '#1677ff' }}>{chrome.i18n.getMessage("extensionName")}</Title>
+            <Title level={5} style={{ margin: 0, color: '#1677ff' }}>{t("extensionName")}</Title>
           </div>
           <div>
-            <Tooltip title={view === "editor" ? "Settings" : "Back to Editor"}>
+            <Tooltip title={view === "editor" ? t("settings") : t("backToEditor")}>
               <Button 
                 type="text" 
                 icon={view === "editor" ? <SettingOutlined /> : <ArrowLeftOutlined />} 
@@ -588,7 +586,7 @@ const SidePanelContent = () => {
         }}>
           {errorMsg && (
             <Alert 
-              message="Error" 
+              message={t("somethingWentWrong")}
               description={errorMsg} 
               type="error" 
               showIcon 
@@ -609,17 +607,17 @@ const SidePanelContent = () => {
               whiteSpace: 'nowrap'
             }}>
               <Space>
-                <Tooltip title="Auto-detect content">
-                  <Button icon={<RocketOutlined />} size="small" onClick={() => handleExtract("smart")}>{chrome.i18n.getMessage("smartExtract")}</Button>
+                <Tooltip title={t("autoDetectContent")}>
+                  <Button icon={<RocketOutlined />} size="small" onClick={() => handleExtract("smart")}>{t("smartExtract")}</Button>
                 </Tooltip>
-                <Tooltip title="Full page HTML">
-                  <Button icon={<FileTextOutlined />} size="small" onClick={() => handleExtract("full")}>{chrome.i18n.getMessage("fullPage")}</Button>
+                <Tooltip title={t("fullPageHTML")}>
+                  <Button icon={<FileTextOutlined />} size="small" onClick={() => handleExtract("full")}>{t("fullPage")}</Button>
                 </Tooltip>
-                <Tooltip title="Selected text">
-                  <Button icon={<ScissorOutlined />} size="small" onClick={() => handleExtract("selected")}>{chrome.i18n.getMessage("selectedText")}</Button>
+                <Tooltip title={t("selectedText")}>
+                  <Button icon={<ScissorOutlined />} size="small" onClick={() => handleExtract("selected")}>{t("selectedText")}</Button>
                 </Tooltip>
-                <Tooltip title="Select element on page">
-                  <Button icon={<SelectOutlined />} size="small" onClick={() => handleExtract("selection")}>{chrome.i18n.getMessage("pickElement")}</Button>
+                <Tooltip title={t("selectElementOnPage")}>
+                  <Button icon={<SelectOutlined />} size="small" onClick={() => handleExtract("selection")}>{t("pickElement")}</Button>
                 </Tooltip>
               </Space>
             </div>
@@ -659,10 +657,10 @@ const SidePanelContent = () => {
                 onClick={({ key }) => setActiveSetting(key)}
                 style={{ height: '100%', borderRight: 0, background: 'transparent' }}
                 items={[
-                  { key: 'services', label: chrome.i18n.getMessage("pushServices") },
-                  { key: 'ai_settings', label: "AI 提示词" },
-                  { key: 'language', label: chrome.i18n.getMessage("language")},
-                  { key: 'about', label: chrome.i18n.getMessage("aboutUs") },
+                  { key: 'services', label: t("pushServices") },
+                  { key: 'ai_settings', label: t("aiSettings") },
+                  { key: 'language', label: t("language")},
+                  { key: 'about', label: t("aboutUs") },
                 ]}
               />
             </Sider>
@@ -670,11 +668,11 @@ const SidePanelContent = () => {
               {activeSetting === 'services' && (
                 <>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                    <Title level={5} style={{ margin: 0 }}>{chrome.i18n.getMessage("pushServices")}</Title>
-                    <Button type="primary" icon={<PlusOutlined />} onClick={handleAddService}>Add Service</Button>
+                    <Title level={5} style={{ margin: 0 }}>{t("pushServices")}</Title>
+                    <Button type="primary" icon={<PlusOutlined />} onClick={handleAddService}>{t("addService")}</Button>
                   </div>
                   <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
-                    Available variables: <Text code>$main_text</Text>, <Text code>$source_url</Text>, <Text code>$web_title</Text>, <Text code>$author</Text>
+                    {t("availableVariables")} <Text code>$main_text</Text>, <Text code>$source_url</Text>, <Text code>$web_title</Text>, <Text code>$author</Text>
                   </Text>
                   
                   <List
@@ -688,7 +686,7 @@ const SidePanelContent = () => {
                             size="small"
                           />,
                           <Button type="text" icon={<EditOutlined />} onClick={() => handleEditService(index)} />,
-                          <Popconfirm title="Delete service?" onConfirm={() => handleDeleteService(index)}>
+                          <Popconfirm title={t("deleteServiceConfirm")} onConfirm={() => handleDeleteService(index)}>
                              <Button type="text" danger icon={<DeleteOutlined />} />
                           </Popconfirm>
                         ]}
@@ -707,7 +705,7 @@ const SidePanelContent = () => {
                   />
 
                   <Modal
-                    title={editingIndex !== null ? "Edit Service" : "Add Service"}
+                    title={editingIndex !== null ? t("editService") : t("addService")}
                     open={isModalOpen}
                     onOk={handleSaveService}
                     onCancel={() => setIsModalOpen(false)}
@@ -720,15 +718,15 @@ const SidePanelContent = () => {
                     >
                       <Form.Item
                         name="name"
-                        label="Service Name"
-                        rules={[{ required: true, message: 'Please enter service name' }]}
+                        label={t("serviceName")}
+                        rules={[{ required: true, message: t("pleaseEnterServiceName") }]}
                       >
                         <Input placeholder="e.g. My Obsidian" />
                       </Form.Item>
                       
                       <Form.Item
                         name="description"
-                        label="Description"
+                        label={t("serviceDescription")}
                       >
                         <Input placeholder="e.g. Push to local obsidian server" />
                       </Form.Item>
@@ -736,14 +734,14 @@ const SidePanelContent = () => {
                       <Form.Item
                          name="is_open"
                          valuePropName="checked"
-                         label="Enabled"
+                         label={t("serviceEnabled")}
                       >
                          <Switch />
                       </Form.Item>
 
                       <Form.Item
                         name="server_type"
-                        label="Server Type"
+                        label={t("serverType")}
                         rules={[{ required: true }]}
                       >
                         <Select 
@@ -770,14 +768,14 @@ const SidePanelContent = () => {
               )}
               {activeSetting === 'ai_settings' && (
                 <div>
-                  <Title level={5}>AI 提示词配置</Title>
+                  <Title level={5}>{t("aiPromptConfig")}</Title>
                   <Alert
-                     message="变量说明"
+                     message={t("variableDescription")}
                      description={
                        <ul>
-                         <li>$main_text: 正文内容</li>
-                         <li>$web_title: 网页标题</li>
-                         <li>$source_url: 来源链接</li>
+                         <li>{t("variableDescMainText")}</li>
+                         <li>{t("variableDescWebTitle")}</li>
+                         <li>{t("variableDescSourceUrl")}</li>
                        </ul>
                      }
                      type="info"
@@ -788,17 +786,17 @@ const SidePanelContent = () => {
                     rows={10}
                     value={aiPromptTemplate}
                     onChange={(e) => setAiPromptTemplate(e.target.value)}
-                    placeholder="$main_text\n\n将上述内容整理为一个完整文章"
+                    placeholder={t("aiPromptPlaceholder")}
                     style={{ fontFamily: 'monospace' }}
                   />
                 </div>
               )}
               {activeSetting === 'language' && (
                 <div>
-                  <Title level={5}>{chrome.i18n.getMessage("language")}</Title>
+                  <Title level={5}>{t("language")}</Title>
                   <Select 
                     value={userLanguage}
-                    onChange={(val) => setUserLanguage(val)}
+                    onChange={(val) => setUserLanguage(val as Locale)}
                     style={{ width: 120 }} 
                     options={[
                       { value: 'en', label: 'English' }, 
@@ -809,12 +807,12 @@ const SidePanelContent = () => {
               )}
               {activeSetting === 'about' && (
                 <div>
-                  <Title level={5}>{chrome.i18n.getMessage("aboutUs")}</Title>
-                  <Text strong>{chrome.i18n.getMessage("extensionName")}</Text>
+                  <Title level={5}>{t("aboutUs")}</Title>
+                  <Text strong>{t("extensionName")}</Text>
                   <br/>
-                  <Text type="secondary">{chrome.i18n.getMessage("version")}: 0.0.1</Text>
+                  <Text type="secondary">{t("version")}: 0.0.1</Text>
                   <br/><br/>
-                  <Text>{chrome.i18n.getMessage("extensionDescription")}</Text>
+                  <Text>{t("extensionDescription")}</Text>
                 </div>
               )}
             </Content>
@@ -834,16 +832,16 @@ const SidePanelContent = () => {
         {view === "editor" && (
           <>
             <Space size="small">
-               <Tooltip title={chrome.i18n.getMessage("copy")}>
+               <Tooltip title={t("copy")}>
                   <Button icon={<CopyOutlined />} onClick={handleCopy} />
                </Tooltip>
-              <Tooltip title="复制给 AI">
+              <Tooltip title={t("copyToAI")}>
                   <Button icon={<RobotOutlined />} onClick={handleCopyToAI} />
                </Tooltip>
-               <Tooltip title={chrome.i18n.getMessage("download")}>
+               <Tooltip title={t("download")}>
                   <Button icon={<DownloadOutlined />} onClick={handleDownload} />
                </Tooltip>
-               <Tooltip title={chrome.i18n.getMessage("clear")}>
+               <Tooltip title={t("clear")}>
                   <Button danger icon={<DeleteOutlined />} onClick={handleClear} />
                </Tooltip>
             </Space>

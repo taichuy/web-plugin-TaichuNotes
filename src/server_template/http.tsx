@@ -54,27 +54,30 @@ export const HttpTemplate: ServiceTemplate = {
   defaultName: "HTTP Service",
   defaultDescription: "Generic HTTP Request",
   handler: handleHttp,
-  FormItems: () => (
-    <Form.Item
-      name="config"
-      label="Configuration (JSON)"
-      rules={[
-        { required: true, message: 'Please enter configuration' },
-        { 
-          validator: (_, value) => {
-             try {
-                JSON.parse(value)
-                return Promise.resolve()
-             } catch (e) {
-                return Promise.reject(new Error("Invalid JSON"))
-             }
+  FormItems: () => {
+    const { t } = useI18n()
+    return (
+      <Form.Item
+        name="config"
+        label={t("configurationJson")}
+        rules={[
+          { required: true, message: t("pleaseEnterConfig") },
+          { 
+            validator: (_, value) => {
+               try {
+                  JSON.parse(value)
+                  return Promise.resolve()
+               } catch (e) {
+                  return Promise.reject(new Error(t("invalidJson")))
+               }
+            }
           }
-        }
-      ]}
-    >
-      <TextArea rows={10} style={{ fontFamily: 'monospace' }} />
-    </Form.Item>
-  ),
+        ]}
+      >
+        <TextArea rows={10} style={{ fontFamily: 'monospace' }} />
+      </Form.Item>
+    )
+  },
   processConfigBeforeSave: (values: any) => {
     try {
       return JSON.parse(values.config)

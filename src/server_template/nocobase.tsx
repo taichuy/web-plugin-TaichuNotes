@@ -3,6 +3,7 @@ import { Form, Input, Divider } from "antd"
 import type { HttpConfig } from "~lib/types"
 import { handleHttp } from "./http"
 import type { ServiceTemplate } from "./types"
+import { useI18n } from "~lib/i18n"
 
 interface NocobaseConfig {
   domain: string
@@ -48,72 +49,75 @@ export const NocobaseTemplate: ServiceTemplate = {
   label: "NocoBase",
   // No defaultName/description to prevent auto-fill
   handler: handleNocobase,
-  FormItems: () => (
-    <>
-      <Form.Item
-        name="domain"
-        label="NocoBase 域名"
-        rules={[{ required: true, message: '请输入 NocoBase 域名' }]}
-        extra="例如: https://wwww.taichuy.com"
-      >
-        <Input placeholder="https://your-nocobase.com" />
-      </Form.Item>
+  FormItems: () => {
+    const { t } = useI18n()
+    return (
+      <>
+        <Form.Item
+          name="domain"
+          label={t("nocobaseDomain")}
+          rules={[{ required: true, message: t("pleaseEnterDomain") }]}
+          extra={t("domainExample")}
+        >
+          <Input placeholder="https://your-nocobase.com" />
+        </Form.Item>
 
-      <Form.Item
-        name="collection"
-        label="存储表名 (Collection)"
-        rules={[{ required: true, message: '请输入存储表名' }]}
-        extra="例如: collection"
-      >
-        <Input placeholder="collection_name" />
-      </Form.Item>
+        <Form.Item
+          name="collection"
+          label={t("collectionName")}
+          rules={[{ required: true, message: t("pleaseEnterCollection") }]}
+          extra={t("collectionExample")}
+        >
+          <Input placeholder="collection_name" />
+        </Form.Item>
 
-      <Form.Item
-        name="urlParams"
-        label="URL 参数"
-        extra="可选，例如: triggerWorkflows=123"
-      >
-        <Input placeholder="key=value" />
-      </Form.Item>
+        <Form.Item
+          name="urlParams"
+          label={t("urlParams")}
+          extra={t("urlParamsExample")}
+        >
+          <Input placeholder="key=value" />
+        </Form.Item>
 
-      <Form.Item
-        name="apiKey"
-        label="API Key"
-        rules={[{ required: true, message: '请输入 API Key' }]}
-      >
-        <Input.Password placeholder="Bearer Token" />
-      </Form.Item>
+        <Form.Item
+          name="apiKey"
+          label={t("apiKey")}
+          rules={[{ required: true, message: t("pleaseEnterApiKey") }]}
+        >
+          <Input.Password placeholder="Bearer Token" />
+        </Form.Item>
 
-      <Divider orientation="left" plain>字段映射配置</Divider>
+        <Divider orientation="left" plain>{t("fieldMappingConfig")}</Divider>
 
-      <Form.Item
-        name="titleField"
-        label="当前页面标题"
-        initialValue="title"
-        rules={[{ required: true, message: '请输入标题字段名' }]}
-      >
-        <Input placeholder="默认为 title" />
-      </Form.Item>
+        <Form.Item
+          name="titleField"
+          label={t("pageTitleField")}
+          initialValue="title"
+          rules={[{ required: true, message: t("pleaseEnterTitleField") }]}
+        >
+          <Input placeholder={t("defaultTitle")} />
+        </Form.Item>
 
-      <Form.Item
-        name="urlField"
-        label="当前页面URL"
-        initialValue="source_url"
-        rules={[{ required: true, message: '请输入URL字段名' }]}
-      >
-        <Input placeholder="默认为 source_url" />
-      </Form.Item>
+        <Form.Item
+          name="urlField"
+          label={t("pageUrlField")}
+          initialValue="url"
+          rules={[{ required: true, message: t("pleaseEnterUrlField") }]} 
+        >
+          <Input placeholder={t("defaultUrl")} />
+        </Form.Item>
 
-      <Form.Item
-        name="contentField"
-        label="编辑器内容"
-        initialValue="content"
-        rules={[{ required: true, message: '请输入正文字段名' }]}
-      >
-        <Input placeholder="默认为 content" />
-      </Form.Item>
-    </>
-  ),
+        <Form.Item
+          name="contentField"
+          label={t("pageContentField")}
+          initialValue="content"
+          rules={[{ required: true, message: t("pleaseEnterContentField") }]}
+        >
+          <Input placeholder={t("defaultContent")} />
+        </Form.Item>
+      </>
+    )
+  },
   processConfigBeforeSave: (values: any) => {
     return {
       domain: values.domain,
