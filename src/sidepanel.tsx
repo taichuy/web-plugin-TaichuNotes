@@ -127,6 +127,7 @@ const SidePanelContent = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [form] = Form.useForm()
+  const serverType = Form.useWatch('server_type', form)
 
   const vditorRef = useRef<Vditor | null>(null)
   const editorContainerRef = useRef<HTMLDivElement>(null)
@@ -407,7 +408,8 @@ const SidePanelContent = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: {}
-      }, null, 2)
+      }, null, 2),
+      apiKey: ""
     })
     setIsModalOpen(true)
   }
@@ -415,13 +417,21 @@ const SidePanelContent = () => {
   const handleEditService = (index: number) => {
     const service = servicesConfig[index]
     setEditingIndex(index)
-    form.setFieldsValue({
+    
+    const initialValues: any = {
       name: service.name,
       description: service.description,
       server_type: service.server_type,
       is_open: service.is_open,
-      config: JSON.stringify(service.config, null, 2)
-    })
+    }
+
+    if (service.server_type === 'taichuy') {
+       initialValues.apiKey = (service.config as any).apiKey || ""
+    } else {
+       initialValues.config = JSON.stringify(service.config, null, 2)
+    }
+
+    form.setFieldsValue(initialValues)
     setIsModalOpen(true)
   }
 
@@ -442,10 +452,15 @@ const SidePanelContent = () => {
     try {
       const values = await form.validateFields()
       let parsedConfig = {}
-      try {
-        parsedConfig = JSON.parse(values.config)
-      } catch (e) {
-        throw new Error("Invalid JSON in Config field")
+      
+      if (values.server_type === 'taichuy') {
+        parsedConfig = { apiKey: values.apiKey }
+      } else {
+        try {
+          parsedConfig = JSON.parse(values.config)
+        } catch (e) {
+          throw new Error("Invalid JSON in Config field")
+        }
       }
 
       const newService: PushService = {
@@ -672,28 +687,57 @@ const SidePanelContent = () => {
                         label="Server Type"
                         rules={[{ required: true }]}
                       >
-                        <Select options={[{ value: 'http', label: 'HTTP Request' }]} />
+                        <Select 
+                          options={[
+                            { value: 'http', label: 'HTTP Request' },
+                            { value: 'taichuy', label: 'taichuy' }
+                          ]} 
+                          onChange={(value) => {
+                            form.setFieldsValue({ server_type: value })
+                            if (value === 'taichuy') {
+                              form.setFieldsValue({
+                                name: '太初y',
+                                description: '从最初问题开始构建智慧'
+                              })
+                            }
+                          }}
+                        />
                       </Form.Item>
 
-                      <Form.Item
-                        name="config"
-                        label="Configuration (JSON)"
-                        rules={[
-                          { required: true, message: 'Please enter configuration' },
-                          { 
-                            validator: (_, value) => {
-                               try {
-                                  JSON.parse(value)
-                                  return Promise.resolve()
-                               } catch (e) {
-                                  return Promise.reject(new Error("Invalid JSON"))
-                               }
-                            }
+                      {serverType === 'taichuy' ? (
+                        <Form.Item
+                          name="apiKey"
+                          label="API Key"
+                          extra={
+                            <span>
+                              Get your API Key from <a href="https://y.taichu.xyz/" target="_blank" rel="noopener noreferrer">taichuy</a>
+                            </span>
                           }
-                        ]}
-                      >
-                        <TextArea rows={10} style={{ fontFamily: 'monospace' }} />
-                      </Form.Item>
+                          rules={[{ required: true, message: 'Please enter API Key' }]}
+                        >
+                          <Input.Password placeholder="Enter your taichuy API Key" />
+                        </Form.Item>
+                      ) : (
+                        <Form.Item
+                          name="config"
+                          label="Configuration (JSON)"
+                          rules={[
+                            { required: true, message: 'Please enter configuration' },
+                            { 
+                              validator: (_, value) => {
+                                 try {
+                                    JSON.parse(value)
+                                    return Promise.resolve()
+                                 } catch (e) {
+                                    return Promise.reject(new Error("Invalid JSON"))
+                                 }
+                              }
+                            }
+                          ]}
+                        >
+                          <TextArea rows={10} style={{ fontFamily: 'monospace' }} />
+                        </Form.Item>
+                      )}
                     </Form>
                   </Modal>
                 </>
