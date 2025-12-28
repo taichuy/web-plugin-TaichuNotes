@@ -86,12 +86,12 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 
 const DEFAULT_SERVICES: PushService[] = [
   {
-    name: "HTTP Bin Test",
-    description: "Post to httpbin for testing",
-    is_open: true,
+    name: "http demo",
+    description: "http demo",
+    is_open: false,
     server_type: "http",
     config: {
-      url: "https://httpbin.org/post",
+      url: "https://test.demo.com/post",
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -854,7 +854,6 @@ const SidePanelContent = () => {
               loading={loading}
               disabled={!currentClip}
             >
-              {chrome.i18n.getMessage("executePush")}
             </Button>
           </>
         )}
