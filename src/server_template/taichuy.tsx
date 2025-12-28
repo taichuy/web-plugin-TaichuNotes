@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react"
 import { Form, Input } from "antd"
 import type { HttpConfig } from "~lib/types"
 import { handleHttp } from "./http"
 import type { ServiceTemplate } from "./types"
+import { useI18n } from "~lib/i18n"
 
 export async function handleTaichuy(config: { apiKey: string }, variables: Record<string, string>) {
   const httpConfig: HttpConfig = {
@@ -46,7 +48,7 @@ export const TaichuyTemplate: ServiceTemplate = {
       </Form.Item>
     )
   },
-  processConfigBeforeSave: (values: any) => {
+  processConfigBeforeSave: (values: Record<string, any>) => {
     return { apiKey: values.apiKey }
   },
   processConfigForEdit: (config: any) => {

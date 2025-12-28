@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react"
 import { Form, Input, Divider } from "antd"
 import type { HttpConfig } from "~lib/types"
@@ -87,7 +88,7 @@ export const NocobaseTemplate: ServiceTemplate = {
           <Input.Password placeholder="Bearer Token" />
         </Form.Item>
 
-        <Divider orientation="left" plain>{t("fieldMappingConfig")}</Divider>
+        <Divider orientation={"left" as any} plain>{t("fieldMappingConfig")}</Divider>
 
         <Form.Item
           name="titleField"
@@ -118,7 +119,7 @@ export const NocobaseTemplate: ServiceTemplate = {
       </>
     )
   },
-  processConfigBeforeSave: (values: any) => {
+  processConfigBeforeSave: (values: Record<string, any>) => {
     return {
       domain: values.domain,
       collection: values.collection,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, useEffect, useRef, useState, type ErrorInfo, type ReactNode } from "react"
 import Vditor from "vditor"
 import "vditor/dist/index.css"
@@ -24,11 +25,8 @@ import {
   Switch,
   Modal,
   Form,
-  Card,
   Popconfirm,
-  Tag,
-  Row,
-  Col
+  Tag
 } from "antd"
 import { 
   SettingOutlined, 
@@ -681,12 +679,13 @@ const SidePanelContent = () => {
                       <List.Item
                         actions={[
                           <Switch 
+                            key="switch"
                             checked={item.is_open} 
                             onChange={(checked) => handleToggleService(index, checked)} 
                             size="small"
                           />,
-                          <Button type="text" icon={<EditOutlined />} onClick={() => handleEditService(index)} />,
-                          <Popconfirm title={t("deleteServiceConfirm")} onConfirm={() => handleDeleteService(index)}>
+                          <Button key="edit" type="text" icon={<EditOutlined />} onClick={() => handleEditService(index)} />,
+                          <Popconfirm key="delete" title={t("deleteServiceConfirm")} onConfirm={() => handleDeleteService(index)}>
                              <Button type="text" danger icon={<DeleteOutlined />} />
                           </Popconfirm>
                         ]}

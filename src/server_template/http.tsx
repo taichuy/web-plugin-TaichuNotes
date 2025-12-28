@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react"
 import { Form, Input } from "antd"
 import axios, { isAxiosError } from "axios"
 import type { HttpConfig } from "~lib/types"
 import { replaceVariables } from "~lib/variable-replacer"
 import type { ServiceTemplate } from "./types"
+import { useI18n } from "~lib/i18n"
 
 const { TextArea } = Input
 
@@ -67,7 +69,7 @@ export const HttpTemplate: ServiceTemplate = {
                try {
                   JSON.parse(value)
                   return Promise.resolve()
-               } catch (e) {
+               } catch {
                   return Promise.reject(new Error(t("invalidJson")))
                }
             }
@@ -78,10 +80,10 @@ export const HttpTemplate: ServiceTemplate = {
       </Form.Item>
     )
   },
-  processConfigBeforeSave: (values: any) => {
+  processConfigBeforeSave: (values: Record<string, any>) => {
     try {
       return JSON.parse(values.config)
-    } catch (e) {
+    } catch {
       throw new Error("Invalid JSON in Config field")
     }
   },

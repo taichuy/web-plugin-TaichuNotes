@@ -1,4 +1,5 @@
-import type { ExtractedData, PushService, HttpConfig } from "./types"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { ExtractedData, PushService } from "./types"
 import { TEMPLATES } from "~server_template"
 
 export async function executeWorkflow(
