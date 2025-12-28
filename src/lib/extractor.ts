@@ -13,6 +13,38 @@ turndownService.addRule("remove-irrelevant", {
   replacement: () => ""
 })
 
+turndownService.addRule("custom-code-blocks", {
+  filter: (node) => {
+    return (
+      node.nodeName === "DIV" &&
+      (node.classList.contains("md-code-block") || node.classList.contains("md-code-block-light"))
+    )
+  },
+  replacement: (_content, node) => {
+    const element = node as HTMLElement
+    // Extract language from the banner
+    const languageSpan = element.querySelector(".d813de27")
+    const language = languageSpan?.textContent?.trim() || ""
+
+    // Extract code content
+    // Priority: PRE tag > content excluding banner
+    const pre = element.querySelector("pre")
+    let code = ""
+    
+    if (pre) {
+      code = pre.textContent || ""
+    } else {
+      // Clone to safely remove banner without affecting original DOM if needed (though we are in a clone already)
+      const clone = element.cloneNode(true) as HTMLElement
+      const banner = clone.querySelector(".md-code-block-banner-wrap")
+      if (banner) banner.remove()
+      code = clone.textContent || ""
+    }
+
+    return `\`\`\`${language}\n${code.trim()}\n\`\`\`\n\n`
+  }
+})
+
 function getMetaContent(doc: Document, name: string): string | undefined {
   const element = doc.querySelector(`meta[name="${name}"], meta[property="${name}"]`)
   return element?.getAttribute("content") || undefined
@@ -51,6 +83,36 @@ export function extractContent(
     } else if (mode === "selected") {
       const selection = window.getSelection()
       if (selection && selection.rangeCount > 0) {
+        // Special handling: if selection is within a code block, extract as code block
+        const range = selection.getRangeAt(0)
+        let container: Node | null = range.commonAncestorContainer
+        if (container.nodeType === Node.TEXT_NODE) {
+          container = container.parentElement
+        }
+        
+        const codeBlock = (container as Element)?.closest?.(".md-code-block, .md-code-block-light, pre")
+        
+        if (codeBlock) {
+          // It's inside a code block. Extract pure text and wrap in markdown code block.
+          const languageSpan = codeBlock.querySelector(".d813de27")
+          const language = languageSpan?.textContent?.trim() || ""
+          const codeText = selection.toString()
+          
+          // Construct a virtual HTML for turndown to process, or just handle it directly
+          // We bypass turndown for this specific case to ensure exact text preservation
+          contentHtml = `<pre><code class="language-${language}">${codeText}</code></pre>`
+          
+          // We can also return directly here if we want to skip turndown's escaping
+          return {
+            title,
+            content: `\`\`\`${language}\n${codeText}\n\`\`\``,
+            url,
+            author,
+            publishedTime,
+            html: contentHtml
+          }
+        }
+
         const div = doc.createElement("div")
         for (let i = 0; i < selection.rangeCount; i++) {
           div.appendChild(selection.getRangeAt(i).cloneContents())
