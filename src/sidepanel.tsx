@@ -145,9 +145,8 @@ const SidePanelContent = () => {
             cdn: chrome.runtime.getURL("assets/vditor"),
             theme: isDarkMode ? "dark" : "classic",
             icon: "ant", // Use Ant Design style icons if available, or stick to default "ant" which is clean
-            mode: "wysiwyg", // WYSIWYG mode
+            mode: "ir", //  ir mode
             toolbar: [
-              "emoji",
               "headings",
               "bold",
               "italic",
@@ -157,23 +156,14 @@ const SidePanelContent = () => {
               "list",
               "ordered-list",
               "check",
-              "outdent",
-              "indent",
               "|",
               "quote",
               "line",
               "code",
-              "inline-code",
-              "insert-before",
-              "insert-after",
-              "|",
-              "undo",
-              "redo",
               "|",
               "edit-mode",
               "both",
               "preview",
-              "fullscreen"
             ],
             cache: { enable: false },
             value: "", // Let useEffect handle initial content
