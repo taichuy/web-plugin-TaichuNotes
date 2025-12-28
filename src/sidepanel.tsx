@@ -107,6 +107,7 @@ const SidePanelContent = () => {
   const [loading, setLoading] = useState(false)
   const [loadingTip, setLoadingTip] = useState("")
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [isVditorReady, setIsVditorReady] = useState(false)
   
   const vditorRef = useRef<Vditor | null>(null)
   const editorContainerRef = useRef<HTMLDivElement>(null)
@@ -192,17 +193,7 @@ const SidePanelContent = () => {
             },
             after: () => {
               console.log("Vditor initialized successfully")
-              // Trigger a manual check in case currentClip is already ready
-              if (currentClip?.content && currentClip.content !== lastProcessedContent.current) {
-                 const currentVal = vditorRef.current?.getValue() || ""
-                 if (!currentVal) {
-                   vditorRef.current?.setValue(currentClip.content)
-                 } else {
-                   vditorRef.current?.setValue(currentVal + "\n\n---\n\n" + currentClip.content)
-                 }
-                 lastProcessedContent.current = currentClip.content
-                 setLoading(false)
-              }
+              setIsVditorReady(true)
             }
           })
         } catch (err) {
@@ -219,21 +210,22 @@ const SidePanelContent = () => {
       if (vditorRef.current) {
         vditorRef.current.destroy()
         vditorRef.current = null
+        setIsVditorReady(false)
       }
     }
   }, [view, isDarkMode, userLanguage]) // Removed currentClip?.content to prevent re-init on content change
 
   // Update Vditor theme when isDarkMode changes
   useEffect(() => {
-    if (vditorRef.current) {
+    if (isVditorReady && vditorRef.current) {
       const theme = isDarkMode ? "dark" : "classic"
       vditorRef.current.setTheme(theme, theme, theme)
     }
-  }, [isDarkMode])
+  }, [isDarkMode, isVditorReady])
 
   // Update content when clip changes
   useEffect(() => {
-    if (vditorRef.current && currentClip?.content) {
+    if (isVditorReady && vditorRef.current && currentClip?.content) {
       // Check if this content has already been processed to avoid duplicates/loops
       if (currentClip.content !== lastProcessedContent.current) {
         const currentVal = vditorRef.current.getValue()
@@ -250,9 +242,10 @@ const SidePanelContent = () => {
       // Always stop loading when content updates
       setLoading(false)
     }
-  }, [currentClip])
+  }, [currentClip, isVditorReady])
 
   const handleClear = () => {
+    if (!isVditorReady) return
     vditorRef.current?.setValue("")
     setCurrentClip(null)
     lastProcessedContent.current = null
@@ -260,6 +253,7 @@ const SidePanelContent = () => {
   }
 
   const handleCopy = async () => {
+    if (!isVditorReady) return
     const content = vditorRef.current?.getValue() || ""
     if (!content) {
       messageApi.warning("No content to copy")
@@ -275,6 +269,7 @@ const SidePanelContent = () => {
   }
 
   const handleDownload = () => {
+    if (!isVditorReady) return
     const content = vditorRef.current?.getValue() || ""
     if (!content) {
       messageApi.warning("No content to download")
@@ -353,7 +348,7 @@ const SidePanelContent = () => {
   const handleSend = async () => {
     if (!currentClip) return
     
-    const content = vditorRef.current?.getValue() || currentClip.content
+    const content = (isVditorReady && vditorRef.current?.getValue()) || currentClip.content
     const dataToSend = { ...currentClip, content }
     
     setLoading(true)
