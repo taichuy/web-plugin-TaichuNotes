@@ -97,6 +97,11 @@ const SidePanelContent = () => {
     instance: syncStorage
   }, DEFAULT_WORKFLOW)
   
+  const [userLanguage, setUserLanguage] = useStorage<string>({
+    key: "user_language",
+    instance: syncStorage
+  }, "zh")
+  
   const [view, setView] = useState<"editor" | "settings">("editor")
   const [activeSetting, setActiveSetting] = useState("workflow")
   const [loading, setLoading] = useState(false)
@@ -157,6 +162,7 @@ const SidePanelContent = () => {
           vditorRef.current = new Vditor(editorContainerRef.current, {
             height: "100%",
             cdn: chrome.runtime.getURL("assets/vditor"),
+            lang: userLanguage === 'en' ? 'en_US' : 'zh_CN',
             theme: isDarkMode ? "dark" : "classic",
             icon: "ant", // Use Ant Design style icons if available, or stick to default "ant" which is clean
             mode: "ir", //  ir mode
@@ -215,7 +221,7 @@ const SidePanelContent = () => {
         vditorRef.current = null
       }
     }
-  }, [view, isDarkMode]) // Removed currentClip?.content to prevent re-init on content change
+  }, [view, isDarkMode, userLanguage]) // Removed currentClip?.content to prevent re-init on content change
 
   // Update Vditor theme when isDarkMode changes
   useEffect(() => {
@@ -519,7 +525,8 @@ const SidePanelContent = () => {
                 <div>
                   <Title level={5}>语言设置</Title>
                   <Select 
-                    defaultValue="zh" 
+                    value={userLanguage}
+                    onChange={(val) => setUserLanguage(val)}
                     style={{ width: 120 }} 
                     options={[
                       { value: 'en', label: 'English' }, 
