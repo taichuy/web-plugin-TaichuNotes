@@ -41,11 +41,13 @@ import {
   CopyOutlined,
   DownloadOutlined,
   PlusOutlined,
-  EditOutlined
+  EditOutlined,
+  RobotOutlined
 } from "@ant-design/icons"
 
 import "~style.css"
 
+import { replaceVariables } from "~lib/variable-replacer"
 import { executeWorkflow } from "~lib/workflow"
 
 const { Header, Content, Footer, Sider } = Layout
@@ -126,6 +128,11 @@ const SidePanelContent = () => {
     key: "user_language",
     instance: syncStorage
   }, "zh")
+
+  const [aiPromptTemplate, setAiPromptTemplate] = useStorage<string>({
+    key: "ai_prompt_template",
+    instance: syncStorage
+  }, "$main_text\n\n将上述内容整理为一个完整文章")
   
   const [view, setView] = useState<"editor" | "settings">("editor")
   const [activeSetting, setActiveSetting] = useState("services")
@@ -322,6 +329,31 @@ const SidePanelContent = () => {
     } catch (err) {
       console.error(err)
       messageApi.error("Failed to download")
+    }
+  }
+
+  const handleCopyToAI = async () => {
+    if (!currentClip) {
+       messageApi.warning("No content available")
+       return
+    }
+    
+    const content = (isVditorReady && vditorRef.current) ? vditorRef.current.getValue() : currentClip.content
+    const variables: Record<string, string> = {
+      $main_text: content,
+      $source_url: currentClip.url,
+      $web_title: currentClip.title,
+      $author: currentClip.author || "",
+      $published_time: currentClip.publishedTime || ""
+    }
+    
+    try {
+      const textToCopy = replaceVariables(aiPromptTemplate, variables) as string
+      await navigator.clipboard.writeText(textToCopy)
+      messageApi.success("已复制 AI 提示词内容")
+    } catch (err) {
+      console.error(err)
+      messageApi.error("复制失败")
     }
   }
 
@@ -630,6 +662,7 @@ const SidePanelContent = () => {
                 style={{ height: '100%', borderRight: 0, background: 'transparent' }}
                 items={[
                   { key: 'services', label: chrome.i18n.getMessage("pushServices") },
+                  { key: 'ai_settings', label: "AI 提示词" },
                   { key: 'language', label: chrome.i18n.getMessage("language")},
                   { key: 'about', label: chrome.i18n.getMessage("aboutUs") },
                 ]}
@@ -737,6 +770,31 @@ const SidePanelContent = () => {
                   </Modal>
                 </>
               )}
+              {activeSetting === 'ai_settings' && (
+                <div>
+                  <Title level={5}>AI 提示词配置</Title>
+                  <Alert
+                     message="变量说明"
+                     description={
+                       <ul>
+                         <li>$main_text: 正文内容</li>
+                         <li>$web_title: 网页标题</li>
+                         <li>$source_url: 来源链接</li>
+                       </ul>
+                     }
+                     type="info"
+                     showIcon
+                     style={{ marginBottom: 16 }}
+                  />
+                  <TextArea
+                    rows={10}
+                    value={aiPromptTemplate}
+                    onChange={(e) => setAiPromptTemplate(e.target.value)}
+                    placeholder="$main_text\n\n将上述内容整理为一个完整文章"
+                    style={{ fontFamily: 'monospace' }}
+                  />
+                </div>
+              )}
               {activeSetting === 'language' && (
                 <div>
                   <Title level={5}>{chrome.i18n.getMessage("language")}</Title>
@@ -786,6 +844,9 @@ const SidePanelContent = () => {
                </Tooltip>
                <Tooltip title={chrome.i18n.getMessage("download")}>
                   <Button icon={<DownloadOutlined />} onClick={handleDownload} />
+               </Tooltip>
+               <Tooltip title="复制给 AI">
+                  <Button icon={<RobotOutlined />} onClick={handleCopyToAI} />
                </Tooltip>
             </Space>
             <Button 
