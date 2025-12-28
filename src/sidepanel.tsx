@@ -3,7 +3,7 @@ import Vditor from "vditor"
 import "vditor/dist/index.css"
 import { useStorage } from "@plasmohq/storage/hook"
 import { localStorage, syncStorage } from "~lib/storage"
-import { executeWorkflow } from "~lib/workflow"
+import { getServiceOptions, getServiceTemplate } from "~server_template"
 import type { ExtractedData, ExtractMode, PushService } from "~lib/types"
 import { 
   ConfigProvider, 
@@ -45,6 +45,8 @@ import {
 } from "@ant-design/icons"
 
 import "~style.css"
+
+import { executeWorkflow } from "~lib/workflow"
 
 const { Header, Content, Footer, Sider } = Layout
 const { TextArea } = Input
@@ -400,17 +402,29 @@ const SidePanelContent = () => {
     setEditingIndex(null)
     form.resetFields()
     // Default values
+    const defaultType = 'http'
+    const template = getServiceTemplate(defaultType)
+    
     form.setFieldsValue({
-      server_type: "http",
+      server_type: defaultType,
       is_open: true,
-      config: JSON.stringify({
-        url: "",
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: {}
-      }, null, 2),
-      apiKey: ""
+      name: template.defaultName || '',
+      description: template.defaultDescription || '',
+      ...template.processConfigForEdit(DEFAULT_SERVICES[0].config) // Or empty config
     })
+    
+    // Explicitly set default config for http if needed, or rely on form default
+    if (defaultType === 'http') {
+       form.setFieldsValue({
+          config: JSON.stringify({
+            url: "",
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: {}
+          }, null, 2)
+       })
+    }
+    
     setIsModalOpen(true)
   }
 
@@ -418,17 +432,14 @@ const SidePanelContent = () => {
     const service = servicesConfig[index]
     setEditingIndex(index)
     
+    const template = getServiceTemplate(service.server_type)
+    
     const initialValues: any = {
       name: service.name,
       description: service.description,
       server_type: service.server_type,
       is_open: service.is_open,
-    }
-
-    if (service.server_type === 'taichuy') {
-       initialValues.apiKey = (service.config as any).apiKey || ""
-    } else {
-       initialValues.config = JSON.stringify(service.config, null, 2)
+      ...template.processConfigForEdit(service.config)
     }
 
     form.setFieldsValue(initialValues)
@@ -451,16 +462,14 @@ const SidePanelContent = () => {
   const handleSaveService = async () => {
     try {
       const values = await form.validateFields()
-      let parsedConfig = {}
+      const template = getServiceTemplate(values.server_type)
       
-      if (values.server_type === 'taichuy') {
-        parsedConfig = { apiKey: values.apiKey }
-      } else {
-        try {
-          parsedConfig = JSON.parse(values.config)
-        } catch (e) {
-          throw new Error("Invalid JSON in Config field")
-        }
+      let parsedConfig = {}
+      try {
+        parsedConfig = template.processConfigBeforeSave(values)
+      } catch (e: unknown) {
+         const errorMessage = e instanceof Error ? e.message : String(e)
+         throw new Error(errorMessage)
       }
 
       const newService: PushService = {
@@ -688,56 +697,23 @@ const SidePanelContent = () => {
                         rules={[{ required: true }]}
                       >
                         <Select 
-                          options={[
-                            { value: 'http', label: 'HTTP Request' },
-                            { value: 'taichuy', label: 'taichuy' }
-                          ]} 
+                          options={getServiceOptions()} 
                           onChange={(value) => {
-                            form.setFieldsValue({ server_type: value })
-                            if (value === 'taichuy') {
-                              form.setFieldsValue({
-                                name: '太初y',
-                                description: '从最初问题开始构建智慧'
-                              })
-                            }
+                            const template = getServiceTemplate(value)
+                            form.setFieldsValue({ 
+                               server_type: value,
+                               name: template.defaultName || '',
+                               description: template.defaultDescription || ''
+                            })
                           }}
                         />
                       </Form.Item>
 
-                      {serverType === 'taichuy' ? (
-                        <Form.Item
-                          name="apiKey"
-                          label="API Key"
-                          extra={
-                            <span>
-                              Get your API Key from <a href="https://y.taichu.xyz/" target="_blank" rel="noopener noreferrer">taichuy</a>
-                            </span>
-                          }
-                          rules={[{ required: true, message: 'Please enter API Key' }]}
-                        >
-                          <Input.Password placeholder="Enter your taichuy API Key" />
-                        </Form.Item>
-                      ) : (
-                        <Form.Item
-                          name="config"
-                          label="Configuration (JSON)"
-                          rules={[
-                            { required: true, message: 'Please enter configuration' },
-                            { 
-                              validator: (_, value) => {
-                                 try {
-                                    JSON.parse(value)
-                                    return Promise.resolve()
-                                 } catch (e) {
-                                    return Promise.reject(new Error("Invalid JSON"))
-                                 }
-                              }
-                            }
-                          ]}
-                        >
-                          <TextArea rows={10} style={{ fontFamily: 'monospace' }} />
-                        </Form.Item>
-                      )}
+                      {(() => {
+                        const template = getServiceTemplate(serverType || 'http')
+                        const FormItems = template.FormItems
+                        return <FormItems />
+                      })()}
                     </Form>
                   </Modal>
                 </>

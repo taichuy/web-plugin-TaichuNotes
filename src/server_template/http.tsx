@@ -1,6 +1,11 @@
+import React from "react"
+import { Form, Input } from "antd"
 import axios, { isAxiosError } from "axios"
 import type { HttpConfig } from "~lib/types"
 import { replaceVariables } from "~lib/variable-replacer"
+import type { ServiceTemplate } from "./types"
+
+const { TextArea } = Input
 
 export async function handleHttp(config: HttpConfig, variables: Record<string, string>) {
   try {
@@ -41,4 +46,45 @@ export async function handleHttp(config: HttpConfig, variables: Record<string, s
         response: errorResponse
       }
     }
+}
+
+export const HttpTemplate: ServiceTemplate = {
+  type: "http",
+  label: "HTTP Request",
+  defaultName: "HTTP Service",
+  defaultDescription: "Generic HTTP Request",
+  handler: handleHttp,
+  FormItems: () => (
+    <Form.Item
+      name="config"
+      label="Configuration (JSON)"
+      rules={[
+        { required: true, message: 'Please enter configuration' },
+        { 
+          validator: (_, value) => {
+             try {
+                JSON.parse(value)
+                return Promise.resolve()
+             } catch (e) {
+                return Promise.reject(new Error("Invalid JSON"))
+             }
+          }
+        }
+      ]}
+    >
+      <TextArea rows={10} style={{ fontFamily: 'monospace' }} />
+    </Form.Item>
+  ),
+  processConfigBeforeSave: (values: any) => {
+    try {
+      return JSON.parse(values.config)
+    } catch (e) {
+      throw new Error("Invalid JSON in Config field")
+    }
+  },
+  processConfigForEdit: (config: any) => {
+    return {
+      config: JSON.stringify(config, null, 2)
+    }
+  }
 }
