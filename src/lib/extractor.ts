@@ -45,6 +45,28 @@ turndownService.addRule("custom-code-blocks", {
   }
 })
 
+turndownService.addRule("dumi-code-blocks", {
+  filter: (node) => {
+    return node.nodeName === "DIV" && node.classList.contains("dumi-default-source-code")
+  },
+  replacement: (_content, node) => {
+    const element = node as HTMLElement
+    // Extract language
+    const languageSpan = element.querySelector(".dumi-default-source-code-language")
+    const language = languageSpan?.textContent?.trim() || ""
+
+    // Extract code content
+    const pre = element.querySelector("pre.prism-code")
+    let code = ""
+    if (pre) {
+      code = pre.textContent || ""
+    } else {
+      code = element.textContent || ""
+    }
+    return `\`\`\`${language}\n${code.trim()}\n\`\`\`\n\n`
+  }
+})
+
 function getMetaContent(doc: Document, name: string): string | undefined {
   const element = doc.querySelector(`meta[name="${name}"], meta[property="${name}"]`)
   return element?.getAttribute("content") || undefined
@@ -90,12 +112,24 @@ export function extractContent(
           container = container.parentElement
         }
         
-        const codeBlock = (container as Element)?.closest?.(".md-code-block, .md-code-block-light, pre")
+        const codeBlock = (container as Element)?.closest?.(".md-code-block, .md-code-block-light, pre, .dumi-default-source-code")
         
         if (codeBlock) {
           // It's inside a code block. Extract pure text and wrap in markdown code block.
-          const languageSpan = codeBlock.querySelector(".d813de27")
-          const language = languageSpan?.textContent?.trim() || ""
+          let language = ""
+          
+          // Try to find language for custom md blocks
+          const mdLangSpan = codeBlock.querySelector(".d813de27")
+          if (mdLangSpan) {
+            language = mdLangSpan.textContent?.trim() || ""
+          } else {
+             // Try to find language for dumi blocks
+             const dumiLangSpan = codeBlock.querySelector(".dumi-default-source-code-language")
+             if (dumiLangSpan) {
+               language = dumiLangSpan.textContent?.trim() || ""
+             }
+          }
+          
           const codeText = selection.toString()
           
           // Construct a virtual HTML for turndown to process, or just handle it directly
