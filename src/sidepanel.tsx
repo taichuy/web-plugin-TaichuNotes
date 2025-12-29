@@ -853,14 +853,14 @@ const SidePanelContent = () => {
                   <Alert
                      message={t("variableDescription")}
                      description={
-                       <ul>
-                         <li>{t("variableDescMainText")}</li>
-                         <li>{t("variableDescWebTitle")}</li>
-                         <li>{t("variableDescSourceUrl")}</li>
-                       </ul>
+                       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                         <div>• {t("variableDescMainText")}</div>
+                         <div>• {t("variableDescWebTitle")}</div>
+                         <div>• {t("variableDescSourceUrl")}</div>
+                       </div>
                      }
                      type="info"
-                     showIcon
+                     showIcon={false}
                      style={{ marginBottom: 16 }}
                   />
                   <TextArea

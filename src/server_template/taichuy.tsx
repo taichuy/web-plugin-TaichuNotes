@@ -39,7 +39,7 @@ export const TaichuyTemplate: ServiceTemplate = {
         label={t("apiKey")}
         extra={
           <span>
-            {t("getApiKeyFrom")} <a href="https://y.taichu.xyz/profile" target="_blank" rel="noopener noreferrer">{t("taichuyProfile")}</a>
+            {t("getApiKeyFrom")} <a href="https://y.taichu.xyz/profile/key" target="_blank" rel="noopener noreferrer">{t("taichuyProfile")}</a>
           </span>
         }
         rules={[{ required: true, message: t("pleaseEnterApiKey") }]}
