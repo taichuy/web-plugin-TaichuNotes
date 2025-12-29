@@ -41,7 +41,9 @@ import {
   DownloadOutlined,
   PlusOutlined,
   EditOutlined,
-  RobotOutlined
+  RobotOutlined,
+  LinkOutlined,
+  CloseOutlined
 } from "@ant-design/icons"
 
 import "~style.css"
@@ -136,6 +138,7 @@ const SidePanelContent = () => {
   const [loadingTip, setLoadingTip] = useState("")
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [isVditorReady, setIsVditorReady] = useState(false)
+  const [createdArticleLinks, setCreatedArticleLinks] = useState<string[]>([])
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -245,6 +248,8 @@ const SidePanelContent = () => {
         vditorRef.current.destroy()
         vditorRef.current = null
         setIsVditorReady(false)
+        // Reset lastProcessedContent so that when we return to editor, content is re-injected
+        lastProcessedContent.current = null
       }
     }
   }, [view, isDarkMode, userLanguage]) // Removed currentClip?.content to prevent re-init on content change
@@ -283,6 +288,7 @@ const SidePanelContent = () => {
     vditorRef.current?.setValue("")
     setCurrentClip(null)
     lastProcessedContent.current = null
+    setCreatedArticleLinks([])
     messageApi.success(t("editorCleared"))
   }
 
@@ -409,6 +415,9 @@ const SidePanelContent = () => {
   const handleSend = async () => {
     if (!currentClip) return
     
+    // Clear previous links
+    setCreatedArticleLinks([])
+
     const content = (isVditorReady && vditorRef.current) ? vditorRef.current.getValue() : currentClip.content
     const dataToSend = { ...currentClip, content }
     
@@ -418,6 +427,18 @@ const SidePanelContent = () => {
     try {
       const results = await executeWorkflow(servicesConfig, dataToSend)
       const failed = results.filter(r => !r.success)
+      
+      // Extract links from successful results
+      const newLinks: string[] = []
+      results.forEach(r => {
+        if (r.success && r.serverType === 'taichuy' && r.data?.data?.id) {
+          newLinks.push(`https://y.taichu.xyz/article?id=${r.data.data.id}&type=my`)
+        }
+      })
+      
+      if (newLinks.length > 0) {
+        setCreatedArticleLinks(newLinks)
+      }
       
       if (failed.length > 0) {
         throw new Error(t("serviceFailed", { n: failed.length }))
@@ -541,6 +562,10 @@ const SidePanelContent = () => {
     }
   }
 
+  const handleCloseLink = (indexToRemove: number) => {
+    setCreatedArticleLinks(prev => prev.filter((_, index) => index !== indexToRemove))
+  }
+
   return (
     <ConfigProvider
       theme={{
@@ -637,6 +662,63 @@ const SidePanelContent = () => {
               )}
               <div ref={editorContainerRef} style={{ height: '100%', width: '100%' }} />
             </div>
+
+            {createdArticleLinks.length > 0 && (
+              <div style={{ 
+                padding: '8px 16px', 
+                borderTop: `1px solid ${isDarkMode ? '#303030' : '#f0f0f0'}`,
+                background: isDarkMode ? '#141414' : '#fafafa'
+              }}>
+                 <Space direction="vertical" style={{ width: '100%' }}>
+                   {createdArticleLinks.map((link, index) => (
+                     <div
+                       key={index}
+                       style={{
+                         position: 'relative',
+                         padding: '8px 24px 8px 12px',
+                         borderRadius: 4,
+                         backgroundColor: isDarkMode ? '#162312' : '#f6ffed',
+                         border: `1px solid ${isDarkMode ? '#274916' : '#b7eb8f'}`,
+                       }}
+                     >
+                       <a 
+                         href={link} 
+                         target="_blank" 
+                         rel="noopener noreferrer" 
+                         style={{ 
+                           display: 'flex', 
+                           alignItems: 'flex-start', 
+                           gap: 8,
+                           color: isDarkMode ? '#49aa19' : '#52c41a',
+                           wordBreak: 'break-all',
+                           fontSize: '13px',
+                           lineHeight: 1.5
+                         }}
+                       >
+                         <LinkOutlined style={{ marginTop: 4, flexShrink: 0 }} /> 
+                         {link}
+                       </a>
+                       <div 
+                         role="button"
+                         tabIndex={0}
+                         onClick={() => handleCloseLink(index)}
+                         style={{
+                           position: 'absolute',
+                           top: 4,
+                           right: 4,
+                           cursor: 'pointer',
+                           padding: 4,
+                           lineHeight: 0,
+                           color: isDarkMode ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)'
+                         }}
+                       >
+                         <CloseOutlined style={{ fontSize: 10 }} />
+                       </div>
+                     </div>
+                   ))}
+                 </Space>
+              </div>
+            )}
           </>
         ) : (
           <Layout style={{ height: '100%', background: 'transparent' }}>

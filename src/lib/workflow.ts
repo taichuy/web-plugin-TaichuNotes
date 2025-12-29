@@ -32,6 +32,7 @@ export async function executeWorkflow(
 
       results.push({
         serviceName: service.name,
+        serverType: service.server_type,
         success: result.success,
         status: result.status,
         data: result.data,
