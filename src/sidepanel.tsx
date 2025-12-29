@@ -895,12 +895,17 @@ const SidePanelContent = () => {
               )}
               {activeSetting === 'about' && (
                 <div>
-                  <Title level={5}>{t("aboutUs")}</Title>
                   <Text strong>{t("extensionName")}</Text>
                   <br/>
-                  <Text type="secondary">{t("version")}: 0.0.1</Text>
+                  <Text type="secondary">{t("version")}: {chrome.runtime.getManifest().version}</Text>
                   <br/><br/>
                   <Text>{t("extensionDescription")}</Text>
+                  <div style={{ marginTop: 24 }}>
+                    <Text strong style={{ fontSize: '12px' }}>{t("storyTitle")}</Text>
+                    <div style={{ marginTop: 8 }}>
+                      <Text type="secondary" style={{ fontSize: '12px', whiteSpace: 'pre-line' }}>{t("storyContent")}</Text>
+                    </div>
+                  </div>
                 </div>
               )}
             </Content>

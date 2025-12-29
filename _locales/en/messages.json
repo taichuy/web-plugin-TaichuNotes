@@ -378,5 +378,13 @@
   "defaultContent": {
     "message": "Default: content",
     "description": "Placeholder"
+  },
+  "storyTitle": {
+    "message": "Our Story:",
+    "description": "Story title in About Us"
+  },
+  "storyContent": {
+    "message": "Taichu Notes was my first startup project. Unsurprisingly, it failed. I integrated some of its original features into TaichuY. I thought Taichu Notes would remain a memory forever, but when deciding on a name for this plugin, I retrieved it from the depths of my drawer.\n\nNow, please let me introduce Taichu Notes to you again.\n\nTaichu Notes is a browser plugin that supports quick clipping and extracting of web content, editing, and end-to-end transmission to your configured push services—even directly to locally deployed ones.\n\nI hope this plugin helps you capture those fleeting moments of inspiration.",
+    "description": "Story content in About Us"
   }
 }

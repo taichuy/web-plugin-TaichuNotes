@@ -378,5 +378,13 @@
   "defaultContent": {
     "message": "默认为 content",
     "description": "Placeholder"
+  },
+  "storyTitle": {
+    "message": "我们的故事：",
+    "description": "Story title in About Us"
+  },
+  "storyContent": {
+    "message": "太初笔记，是我人生第一个创业项目，不出意料失败了，我将当初太初笔记一些功能继承到了太初y中，我原本我以为太初笔记会永远留在我记忆中，但是在想这个插件应该叫什么名字时候，我又再次从抽屉深处拿了出来。\n\n现在请让我再次为你介绍，太初笔记。\n\n太初笔记，是一个浏览器插件，是一个支持web上剪切快速提取网页内容，编辑，并且端对端传输到你配置好推送服务中，哪怕是推送到本地部署服务。\n\n希望本插件可以帮助你记下那一闪而过灵感。",
+    "description": "Story content in About Us"
   }
 }
