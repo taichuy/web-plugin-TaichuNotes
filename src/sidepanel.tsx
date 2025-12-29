@@ -50,6 +50,7 @@ import "~style.css"
 
 import { replaceVariables } from "~lib/variable-replacer"
 import { executeWorkflow } from "~lib/workflow"
+import copy from "copy-to-clipboard"
 
 const { Header, Content, Footer, Sider } = Layout
 const { TextArea } = Input
@@ -292,7 +293,7 @@ const SidePanelContent = () => {
     messageApi.success(t("editorCleared"))
   }
 
-  const handleCopy = async () => {
+  const handleCopy = () => {
     if (!isVditorReady) return
     const content = vditorRef.current?.getValue() || ""
     if (!content) {
@@ -300,8 +301,11 @@ const SidePanelContent = () => {
       return
     }
     try {
-      await navigator.clipboard.writeText(content)
-      messageApi.success(t("copiedToClipboard"))
+      if (copy(content)) {
+        messageApi.success(t("copiedToClipboard"))
+      } else {
+        throw new Error("Copy failed")
+      }
     } catch (err) {
       console.error(err)
       messageApi.error(t("failedToCopy"))
@@ -332,7 +336,7 @@ const SidePanelContent = () => {
     }
   }
 
-  const handleCopyToAI = async () => {
+  const handleCopyToAI = () => {
     if (!currentClip) {
        messageApi.warning(t("noContentAvailable"))
        return
@@ -349,8 +353,11 @@ const SidePanelContent = () => {
     
     try {
       const textToCopy = replaceVariables(aiPromptTemplate, variables) as string
-      await navigator.clipboard.writeText(textToCopy)
-      messageApi.success(t("copiedAIPrompt"))
+      if (copy(textToCopy)) {
+        messageApi.success(t("copiedAIPrompt"))
+      } else {
+        throw new Error("Copy failed")
+      }
     } catch (err) {
       console.error(err)
       messageApi.error(t("failedToCopy"))
