@@ -899,7 +899,7 @@ const SidePanelContent = () => {
                   <br/>
                   <Text type="secondary">{t("version")}: {chrome.runtime.getManifest().version}</Text>
                   <br/><br/>
-                  <Text>{t("extensionDescription")}</Text>
+                  <Text>{t("extensionDescription")}2</Text>
                   <div style={{ marginTop: 24 }}>
                     <Text strong style={{ fontSize: '12px' }}>{t("storyTitle")}</Text>
                     <div style={{ marginTop: 8 }}>
