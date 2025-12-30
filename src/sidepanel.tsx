@@ -45,8 +45,7 @@ import {
   LinkOutlined,
   CloseOutlined,
   GithubOutlined,
-  GlobalOutlined,
-  MailOutlined
+  GlobalOutlined
 } from "@ant-design/icons"
 
 import "~style.css"
@@ -408,25 +407,6 @@ const SidePanelContent = () => {
       console.error(err)
       messageApi.error(t("failedToCopy"))
     }
-  }
-
-  const handleContactAuthor = () => {
-    const version = chrome.runtime.getManifest().version
-    const userAgent = navigator.userAgent
-    const language = navigator.language
-
-    const subject = t("emailSubject")
-    const email = t("contactEmail")
-
-    const body = t("emailBodyTemplate", {
-      version,
-      userAgent,
-      language
-    })
-
-    const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-    
-    chrome.tabs.create({ url: mailtoLink })
   }
 
   const handleExtract = async (mode: ExtractMode) => {
@@ -986,12 +966,6 @@ const SidePanelContent = () => {
                         <Space>
                            <GithubOutlined />
                            {t("openSourceRepo")} : <a href="https://github.com/taichuy/web-plugin-TaichuNotes" target="_blank" rel="noopener noreferrer">https://github.com/taichuy/web-plugin-TaichuNotes</a>
-                        </Space>
-                      </div>
-                      <div style={{ fontSize: '12px' }}>
-                        <Space>
-                           <MailOutlined />
-                           {t("contactAuthor")} : <a style={{ cursor: 'pointer' }} onClick={handleContactAuthor}>{t("contactEmail")}</a>
                         </Space>
                       </div>
                     </div>
