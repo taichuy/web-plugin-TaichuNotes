@@ -95,7 +95,19 @@ export function extractContent(
       const article = reader.parse()
       if (article) {
         contentHtml = article.content || ""
-        if (article.title) title = article.title
+        if (article.title) {
+          // Verify if the extracted title is valid
+          // Heuristic: If original title contains extracted title, and extracted title is strictly shorter than the remaining part,
+          // it is likely just the site name/brand (e.g. "DeepSeek" from "Analysis - DeepSeek").
+          // In this case, we prefer the original full title to ensure we don't lose the main topic.
+          const isSubstring = title.includes(article.title)
+          const remainingLength = title.length - article.title.length
+          const isBrandLike = isSubstring && remainingLength > article.title.length
+
+          if (!isBrandLike) {
+            title = article.title
+          }
+        }
         if (article.byline) author = article.byline
       } else {
         contentHtml = clone.body.innerHTML
