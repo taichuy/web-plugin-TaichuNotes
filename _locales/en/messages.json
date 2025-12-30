@@ -414,5 +414,29 @@
   "alipay": {
     "message": "Alipay",
     "description": "Alipay label"
+  },
+  "scanQrCode": {
+    "message": "Scan QR Code",
+    "description": "Scan QR code label"
+  },
+  "orJumpToPage": {
+    "message": "Or jump to donation page",
+    "description": "Or jump to donation page label"
+  },
+  "contactAuthor": {
+    "message": "Contact Author",
+    "description": "Contact Author button"
+  },
+  "emailSubject": {
+    "message": "Taichuy Extension Feedback",
+    "description": "Email subject"
+  },
+  "emailBodyTemplate": {
+    "message": "Version: {version}\nUser Agent: {userAgent}\nSystem Language: {language}\n\nFeedback:\n",
+    "description": "Email body template"
+  },
+  "contactEmail": {
+    "message": "taichu2021@gmail.com",
+    "description": "Contact email"
   }
 }

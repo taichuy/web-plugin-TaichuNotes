@@ -414,5 +414,29 @@
   "alipay": {
     "message": "支付宝",
     "description": "Alipay label"
+  },
+  "scanQrCode": {
+    "message": "扫描二维码",
+    "description": "Scan QR code label"
+  },
+  "orJumpToPage": {
+    "message": "或者跳转到捐赠页面",
+    "description": "Or jump to donation page label"
+  },
+  "contactAuthor": {
+    "message": "联系作者",
+    "description": "联系作者按钮"
+  },
+  "emailSubject": {
+    "message": "太初y插件反馈",
+    "description": "邮件主题"
+  },
+  "emailBodyTemplate": {
+    "message": "版本: {version}\n浏览器UA: {userAgent}\n系统语言: {language}\n\n反馈内容:\n",
+    "description": "邮件正文模板"
+  },
+  "contactEmail": {
+    "message": "taichu2021@gmail.com",
+    "description": "联系邮箱"
   }
 }

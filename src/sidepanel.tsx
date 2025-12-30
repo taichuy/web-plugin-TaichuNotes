@@ -45,7 +45,8 @@ import {
   LinkOutlined,
   CloseOutlined,
   GithubOutlined,
-  GlobalOutlined
+  GlobalOutlined,
+  MailOutlined
 } from "@ant-design/icons"
 
 import "~style.css"
@@ -55,10 +56,51 @@ import { executeWorkflow } from "~lib/workflow"
 import copy from "copy-to-clipboard"
 import wechatQr from "../assets/author/weichat.jpg"
 import alipayQr from "../assets/author/zhifubao.jpg"
+import paypalQr from "../assets/author/Supporting the-qrcode.png"
 
 const { Header, Content, Footer, Sider } = Layout
 const { TextArea } = Input
 const { Title, Text } = Typography
+
+const PayPalDonate = () => {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+      <img src={paypalQr} alt="PayPal QR Code" style={{ width: 200, height: 200, objectFit: 'contain' }} />
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <form 
+          action="https://www.paypal.com/ncp/payment/54J8F52JA4ZXC" 
+          method="post" 
+          target="_blank" 
+          style={{ display: 'inline-grid', justifyItems: 'center', alignContent: 'start', gap: '0.5rem' }}
+        >
+          <input 
+            type="submit" 
+            value="Donate" 
+            style={{
+              textAlign: 'center',
+              border: 'none',
+              borderRadius: '0.25rem',
+              minWidth: '11.625rem',
+              padding: '0 2rem',
+              height: '2.625rem',
+              fontWeight: 'bold',
+              backgroundColor: '#FFD140',
+              color: '#000000',
+              fontFamily: '"Helvetica Neue",Arial,sans-serif',
+              fontSize: '1rem',
+              lineHeight: '1.25rem',
+              cursor: 'pointer'
+            }}
+          />
+          <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" />
+          <section style={{ fontSize: '0.75rem', textAlign: 'center' }}>
+             Powered by <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="paypal" style={{ height: '0.875rem', verticalAlign: 'middle' }}/>
+          </section>
+        </form>
+      </div>
+    </div>
+  )
+}
 
 // Error Boundary Component
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
@@ -366,6 +408,25 @@ const SidePanelContent = () => {
       console.error(err)
       messageApi.error(t("failedToCopy"))
     }
+  }
+
+  const handleContactAuthor = () => {
+    const version = chrome.runtime.getManifest().version
+    const userAgent = navigator.userAgent
+    const language = navigator.language
+
+    const subject = t("emailSubject")
+    const email = t("contactEmail")
+
+    const body = t("emailBodyTemplate", {
+      version,
+      userAgent,
+      language
+    })
+
+    const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    
+    chrome.tabs.create({ url: mailtoLink })
   }
 
   const handleExtract = async (mode: ExtractMode) => {
@@ -903,7 +964,8 @@ const SidePanelContent = () => {
                   <br/>
                   <Text type="secondary">{t("version")}: {chrome.runtime.getManifest().version}</Text>
                   <br/><br/>
-                  <Text>{t("extensionDescription")}2</Text>
+                  <Text>{t("extensionDescription")}
+                  </Text>
                   <div style={{ marginTop: 24 }}>
                     <Text strong style={{ fontSize: '12px' }}>{t("storyTitle")}</Text>
                     <div style={{ marginTop: 8 }}>
@@ -926,6 +988,12 @@ const SidePanelContent = () => {
                            {t("openSourceRepo")} : <a href="https://github.com/taichuy/web-plugin-TaichuNotes" target="_blank" rel="noopener noreferrer">https://github.com/taichuy/web-plugin-TaichuNotes</a>
                         </Space>
                       </div>
+                      <div style={{ fontSize: '12px' }}>
+                        <Space>
+                           <MailOutlined />
+                           {t("contactAuthor")} : <a style={{ cursor: 'pointer' }} onClick={handleContactAuthor}>{t("contactEmail")}</a>
+                        </Space>
+                      </div>
                     </div>
                   </div>
 
@@ -934,20 +1002,29 @@ const SidePanelContent = () => {
                     <div style={{ marginTop: 8 }}>
                       <Text type="secondary" style={{ fontSize: '12px', whiteSpace: 'pre-line' }}>{t("supportUsDesc")}</Text>
                     </div>
-                    <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 24 }}>
-                      <div style={{ textAlign: 'center' }}>
+                    {userLanguage === 'en' ? (
+                      <div style={{ marginTop: 16 }}>
                          <div style={{ marginBottom: 8 }}>
-                           <Text type="secondary" style={{ fontSize: '12px' }}>{t("wechatPay")}</Text>
+                           <Text type="secondary" style={{ fontSize: '12px' }}>PayPal</Text>
                          </div>
-                         <img src={wechatQr} alt="WeChat Pay" style={{ width: 200, height: 200, objectFit: 'contain' }} />
+                         <PayPalDonate />
                       </div>
-                      <div style={{ textAlign: 'center' }}>
-                         <div style={{ marginBottom: 8 }}>
-                           <Text type="secondary" style={{ fontSize: '12px' }}>{t("alipay")}</Text>
-                         </div>
-                         <img src={alipayQr} alt="Alipay" style={{ width: 200, height: 200, objectFit: 'contain' }} />
+                    ) : (
+                      <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 24 }}>
+                        <div style={{ textAlign: 'center' }}>
+                           <div style={{ marginBottom: 8 }}>
+                             <Text type="secondary" style={{ fontSize: '12px' }}>{t("wechatPay")}</Text>
+                           </div>
+                           <img src={wechatQr} alt="WeChat Pay" style={{ width: 200, height: 200, objectFit: 'contain' }} />
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                           <div style={{ marginBottom: 8 }}>
+                             <Text type="secondary" style={{ fontSize: '12px' }}>{t("alipay")}</Text>
+                           </div>
+                           <img src={alipayQr} alt="Alipay" style={{ width: 200, height: 200, objectFit: 'contain' }} />
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               )}
