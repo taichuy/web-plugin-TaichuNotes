@@ -7,8 +7,12 @@
   "scripts": {
     "dev": "node scripts/start-dev.js",
     "build": "plasmo build && node scripts/copy-assets.js",
+    "build:firefox": "plasmo build --target=firefox-mv2 && node scripts/copy-assets.js",
+    "build:edge": "plasmo build --target=edge-mv3 && node scripts/copy-assets.js",
     "postinstall": "node scripts/copy-assets.js",
     "package": "yarn build && plasmo package",
+    "package:firefox": "yarn build:firefox && plasmo package --target=firefox-mv2",
+    "package:edge": "yarn build:edge && plasmo package --target=edge-mv3",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "type-check": "tsc --noEmit",

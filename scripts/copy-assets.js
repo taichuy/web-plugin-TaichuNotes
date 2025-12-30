@@ -33,37 +33,28 @@ function runCopy() {
         copyDir(src, dest);
         console.log('Copied to src assets');
     
-        // Copy to build folders if parent exists (meaning build has run/started)
-        // For dev build
-        const devBuildRoot = path.join(__dirname, '../build/chrome-mv3-dev');
-        if (fs.existsSync(devBuildRoot)) {
-             copyDir(src, buildDestDev);
-             console.log('Copied to dev build');
-        }
-    
-        // For prod build
-        const prodBuildRoot = path.join(__dirname, '../build/chrome-mv3-prod');
-        if (fs.existsSync(prodBuildRoot)) {
-             copyDir(src, buildDestProd);
-             console.log('Copied to prod build');
-        }
-
-        // Copy _locales
-        const localesSrc = path.join(__dirname, '../_locales');
-        const localesDestDev = path.join(__dirname, '../build/chrome-mv3-dev/_locales');
-        const localesDestProd = path.join(__dirname, '../build/chrome-mv3-prod/_locales');
-        
-        if (fs.existsSync(localesSrc)) {
-             // Copy to dev build
-            if (fs.existsSync(devBuildRoot)) {
-                copyDir(localesSrc, localesDestDev);
-                console.log('Copied _locales to dev build');
-            }
+        // Dynamically copy to all build targets in build/ folder
+        const buildRoot = path.join(__dirname, '../build');
+        if (fs.existsSync(buildRoot)) {
+            const targets = fs.readdirSync(buildRoot, { withFileTypes: true });
             
-            // Copy to prod build
-            if (fs.existsSync(prodBuildRoot)) {
-                copyDir(localesSrc, localesDestProd);
-                console.log('Copied _locales to prod build');
+            for (const target of targets) {
+                if (target.isDirectory()) {
+                    const targetPath = path.join(buildRoot, target.name);
+                    
+                    // Copy Vditor assets
+                    const targetVditorDest = path.join(targetPath, 'assets/vditor/dist');
+                    copyDir(src, targetVditorDest);
+                    console.log(`Copied Vditor assets to ${target.name}`);
+
+                    // Copy _locales
+                    const localesSrc = path.join(__dirname, '../_locales');
+                    const localesDest = path.join(targetPath, '_locales');
+                    if (fs.existsSync(localesSrc)) {
+                        copyDir(localesSrc, localesDest);
+                        console.log(`Copied _locales to ${target.name}`);
+                    }
+                }
             }
         }
         
