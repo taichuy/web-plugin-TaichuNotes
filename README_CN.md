@@ -87,10 +87,10 @@ yarn package:edge     # Edge 专用
 <div style="display: flex; gap: 20px;">
   <div style="text-align: center;">
     <h4>微信支付</h4>
-    <img src="src/assets/author/weichat.jpg" alt="微信支付" width="200" />
+    <img src="assets/author/weichat.jpg" alt="微信支付" width="200" />
   </div>
   <div style="text-align: center;">
     <h4>支付宝</h4>
-    <img src="src/assets/author/zhifubao.jpg" alt="支付宝" width="200" />
+    <img src="assets/author/zhifubao.jpg" alt="支付宝" width="200" />
   </div>
 </div>

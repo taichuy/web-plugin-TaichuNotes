@@ -84,6 +84,6 @@ If you find it helpful, please consider a small donation to support maintenance.
 
 [Scan QR Code or Click to Donate]
 
-<img src="src/assets/author/Supporting the-qrcode.png" alt="PayPal QR Code" width="200" />
+<img src="assets/author/Supporting the-qrcode.png" alt="PayPal QR Code" width="200" />
 
 [**Donate with PayPal**](https://www.paypal.com/ncp/payment/54J8F52JA4ZXC)
