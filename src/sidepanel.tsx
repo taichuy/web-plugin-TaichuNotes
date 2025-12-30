@@ -43,7 +43,9 @@ import {
   EditOutlined,
   RobotOutlined,
   LinkOutlined,
-  CloseOutlined
+  CloseOutlined,
+  GithubOutlined,
+  GlobalOutlined
 } from "@ant-design/icons"
 
 import "~style.css"
@@ -51,6 +53,8 @@ import "~style.css"
 import { replaceVariables } from "~lib/variable-replacer"
 import { executeWorkflow } from "~lib/workflow"
 import copy from "copy-to-clipboard"
+import wechatQr from "../assets/author/weichat.jpg"
+import alipayQr from "../assets/author/zhifubao.jpg"
 
 const { Header, Content, Footer, Sider } = Layout
 const { TextArea } = Input
@@ -904,6 +908,45 @@ const SidePanelContent = () => {
                     <Text strong style={{ fontSize: '12px' }}>{t("storyTitle")}</Text>
                     <div style={{ marginTop: 8 }}>
                       <Text type="secondary" style={{ fontSize: '12px', whiteSpace: 'pre-line' }}>{t("storyContent")}</Text>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: 24 }}>
+                    <Text strong style={{ fontSize: '12px' }}>{t("learnMore")}</Text>
+                    <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      <div style={{ fontSize: '12px' }}>
+                        <Space>
+                           <GlobalOutlined />
+                           {t("taichuyWebsite")} : <a href="https://y.taichu.xyz/" target="_blank" rel="noopener noreferrer">https://y.taichu.xyz/</a>
+                        </Space>
+                      </div>
+                      <div style={{ fontSize: '12px' }}>
+                        <Space>
+                           <GithubOutlined />
+                           {t("openSourceRepo")} : <a href="https://github.com/taichuy/web-plugin-TaichuNotes" target="_blank" rel="noopener noreferrer">https://github.com/taichuy/web-plugin-TaichuNotes</a>
+                        </Space>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: 24 }}>
+                    <Text strong style={{ fontSize: '12px' }}>{t("supportUs")}</Text>
+                    <div style={{ marginTop: 8 }}>
+                      <Text type="secondary" style={{ fontSize: '12px', whiteSpace: 'pre-line' }}>{t("supportUsDesc")}</Text>
+                    </div>
+                    <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 24 }}>
+                      <div style={{ textAlign: 'center' }}>
+                         <div style={{ marginBottom: 8 }}>
+                           <Text type="secondary" style={{ fontSize: '12px' }}>{t("wechatPay")}</Text>
+                         </div>
+                         <img src={wechatQr} alt="WeChat Pay" style={{ width: 200, height: 200, objectFit: 'contain' }} />
+                      </div>
+                      <div style={{ textAlign: 'center' }}>
+                         <div style={{ marginBottom: 8 }}>
+                           <Text type="secondary" style={{ fontSize: '12px' }}>{t("alipay")}</Text>
+                         </div>
+                         <img src={alipayQr} alt="Alipay" style={{ width: 200, height: 200, objectFit: 'contain' }} />
+                      </div>
                     </div>
                   </div>
                 </div>
