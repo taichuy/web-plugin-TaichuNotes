@@ -1,4 +1,8 @@
 {
+  "noContentToSend": {
+    "message": "没有内容可以发送",
+    "description": "发送内容为空时的警告"
+  },
   "extensionName": {
     "message": "太初笔记",
     "description": "插件名称"

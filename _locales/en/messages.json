@@ -1,4 +1,8 @@
 {
+  "noContentToSend": {
+    "message": "No content to send",
+    "description": "Warning when trying to send empty content"
+  },
   "extensionName": {
     "message": "Taichu Notes",
     "description": "Name of the extension"

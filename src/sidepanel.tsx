@@ -184,6 +184,7 @@ const SidePanelContent = () => {
   const [loadingTip, setLoadingTip] = useState("")
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [isVditorReady, setIsVditorReady] = useState(false)
+  const [isPicking, setIsPicking] = useState(false)
   const [createdArticleLinks, setCreatedArticleLinks] = useState<string[]>([])
   
   // Modal State
@@ -329,6 +330,41 @@ const SidePanelContent = () => {
     }
   }, [currentClip, isVditorReady])
 
+  // Listen for selection data from content script
+  useEffect(() => {
+    const handleMessage = (request: any, sender: any, sendResponse: any) => {
+      if (request.type === "CLIPPER_DATA") {
+        const extractedData = request.data as ExtractedData
+        
+        if (vditorRef.current) {
+           const currentVal = vditorRef.current.getValue()
+           const newContent = extractedData.content
+           
+           if (!currentVal || currentVal.trim() === "") {
+             vditorRef.current.setValue(newContent)
+             // Use the picked element's title/url as the base if we don't have one or it's empty
+             setCurrentClip(prev => prev || extractedData)
+           } else {
+             // Append to next line
+             vditorRef.current.setValue(currentVal + "\n\n" + newContent)
+             // Ensure we have metadata
+             setCurrentClip(prev => prev || extractedData)
+           }
+        } else {
+           setCurrentClip(extractedData)
+        }
+        
+        setIsPicking(false)
+        messageApi.success(t("extractedSuccessfully"))
+      }
+    }
+
+    chrome.runtime.onMessage.addListener(handleMessage)
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleMessage)
+    }
+  }, [t, setCurrentClip])
+
   const handleClear = () => {
     if (!isVditorReady) return
     vditorRef.current?.setValue("")
@@ -410,8 +446,13 @@ const SidePanelContent = () => {
   }
 
   const handleExtract = async (mode: ExtractMode) => {
-    setLoading(true)
-    setLoadingTip(t("extractingContent"))
+    if (mode === "selection") {
+      setIsPicking(true)
+      messageApi.info(t("pleaseSelectElement"))
+    } else {
+      setLoading(true)
+      setLoadingTip(t("extractingContent"))
+    }
     
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
@@ -425,7 +466,6 @@ const SidePanelContent = () => {
       }
 
       if (mode === "selection") {
-        setLoadingTip(t("pleaseSelectElement"))
         try {
           await chrome.tabs.sendMessage(tab.id, { action: "extract", mode: "selection" })
         } catch (err) {
@@ -433,6 +473,8 @@ const SidePanelContent = () => {
            if (errorMessage.includes("Could not establish connection")) {
               throw new Error(t("refreshPage"))
            }
+           // If message fails, reset picking state
+           setIsPicking(false)
            throw err
         }
         return
@@ -455,6 +497,9 @@ const SidePanelContent = () => {
       }
     } catch (e: unknown) {
       console.error(e)
+      if (mode === "selection") {
+        setIsPicking(false)
+      }
       const errorMessage = e instanceof Error ? e.message : String(e)
       messageApi.error("Failed: " + errorMessage)
     } finally {
@@ -465,18 +510,49 @@ const SidePanelContent = () => {
   }
 
   const handleSend = async () => {
-    if (!currentClip) return
+    // Determine content source
+    const content = (isVditorReady && vditorRef.current) 
+      ? vditorRef.current.getValue() 
+      : (currentClip?.content || "")
+
+    if (!content.trim()) {
+      messageApi.warning(t("noContentToSend"))
+      return
+    }
     
     // Clear previous links
     setCreatedArticleLinks([])
-
-    const content = (isVditorReady && vditorRef.current) ? vditorRef.current.getValue() : currentClip.content
-    const dataToSend = { ...currentClip, content }
-    
     setLoading(true)
     setLoadingTip(t("pushingToServices"))
     
     try {
+      let dataToSend: ExtractedData
+
+      if (currentClip) {
+        dataToSend = { ...currentClip, content }
+      } else {
+        // Construct minimal data from current tab if possible
+        let title = "Untitled"
+        let url = ""
+        
+        try {
+          const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+          if (tab) {
+             title = tab.title || "Untitled"
+             url = tab.url || ""
+          }
+        } catch (e) {
+          console.warn("Failed to get tab info:", e)
+        }
+        
+        dataToSend = {
+          title,
+          url,
+          content,
+          publishedTime: new Date().toISOString()
+        }
+      }
+
       const results = await executeWorkflow(servicesConfig, dataToSend)
       const failed = results.filter(r => !r.success)
       
@@ -692,7 +768,7 @@ const SidePanelContent = () => {
                   <Button icon={<ScissorOutlined />} size="small" onClick={() => handleExtract("selected")}>{t("selectedText")}</Button>
                 </Tooltip>
                 <Tooltip title={t("selectElementOnPage")}>
-                  <Button icon={<SelectOutlined />} size="small" onClick={() => handleExtract("selection")}>{t("pickElement")}</Button>
+                  <Button icon={<SelectOutlined />} size="small" type={isPicking ? "primary" : "default"} onClick={() => handleExtract("selection")}>{t("pickElement")}</Button>
                 </Tooltip>
               </Space>
             </div>
@@ -1037,7 +1113,6 @@ const SidePanelContent = () => {
               icon={<SendOutlined />} 
               onClick={handleSend}
               loading={loading}
-              disabled={!currentClip}
             >
             </Button>
           </>
